@@ -1,3 +1,4 @@
+````md
 # TCEA Assignment Front Page Generator
 
 A web-based application that allows students of Techno College of Engineering Agartala (TCEA) to generate professional assignment front pages automatically.
@@ -25,7 +26,7 @@ A web-based application that allows students of Techno College of Engineering Ag
 
 ## Project Structure
 
-```
+```text
 college/
 │── assets/
 │── css/
@@ -58,7 +59,6 @@ git clone https://github.com/sanishil/tcea-assignment-front-page-generator.git
 https://myassignment.infinityfreeapp.com/
 ```
 
-
 ## Future Enhancements
 
 - User Login & Registration
@@ -71,7 +71,12 @@ https://myassignment.infinityfreeapp.com/
 ## Author
 
 **Sani Shil**
-GitHub: https://github.com/sanishil
+
+- GitHub: https://github.com/sanishil
+- LinkedIn: www.linkedin.com/in/sanishil
+- Instagram: https://www.instagram.com/sannnix_
+
 ## License
 
 This project is licensed under the MIT License.
+````
