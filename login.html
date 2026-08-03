@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | GDP</title>
+    <link rel="icon" href="img/final_tcea.jpg">
+  <!-- Bootstrap CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #f5f7fa;
+    }
+
+    .object-fit-cover {
+      object-fit: cover;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container d-flex justify-content-center align-items-center min-vh-100 flex-column">
+    <div class="row shadow-lg rounded overflow-hidden bg-white" style="max-width: 900px; width: 100%;">
+
+      <!-- Left Side Image -->
+      <div class="col-lg-6 d-none d-lg-block p-0">
+        <img src="img/back_img.jpg" alt="Campus" class="img-fluid h-100 w-100 object-fit-cover">
+      </div>
+
+      <!-- Login Box -->
+      <div class="col-lg-6 p-4">
+        <h4 class="text-center mb-4">
+          <p class="fw-bold fs-5" style="color:#347ec4;"><b>TECHNO COLLEGE OF ENGINEERING AGARTALA</b>
+          </p>
+          <i class="fa-solid fa-right-to-bracket text-primary"></i> Login
+        </h4>
+
+        <form action="login.php" method="post">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+              <input type="text" name="user" class="form-control" placeholder="Enter Username" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+              <input type="password" name="pass" class="form-control" placeholder="Enter Password" required>
+            </div>
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary fw-semibold">
+              <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Credit Section – 20px below card -->
+    <footer class="text-center mt-3">
+      <p class="mb-1 small">
+        <i class="fa-solid fa-copyright"></i> 2025 Developed By
+        <a href="https://www.linkedin.com/in/sani-shil" class="text-dark fw-semibold text-decoration-none"
+          target="_blank">
+          Mr. Sani Shil
+        </a> | Activity Reviewed by
+        <a href="https://www.instagram.com/paulsagar28?igsh=MW9va3k4Z2M1OGl2bw=="
+          class="text-dark fw-semibold text-decoration-none" target="_blank">
+          Mr. Sagar Rudra Paul
+        </a>
+        
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- JS CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

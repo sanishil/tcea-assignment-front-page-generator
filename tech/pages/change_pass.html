@@ -1,0 +1,36 @@
+<div class="container-fluid">
+    <div class="row" style="padding-top: 20px">
+        <div class="col-lg-12 mb-3">
+            <div class="shadow-lg p-4 rounded">
+                <h5 class="d-flex justify-content-between ">
+                    <span><i class="fa-solid fa-key"></i> Password Section</span>
+                </h5>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3"></div>
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Enter Current Password</label>
+                                <input type="text" class="form-control" id="exampleInputEmail1" ng-model="current_pass"/>
+                                
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">New Password</label>
+                                <input type="text" class="form-control" id="exampleInputPassword1" ng-model="npass"/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">Confirm Password</label>
+                                <input type="text" class="form-control" ng-model="cpass"/>
+                            </div>
+                            <button type="submit" class="btn btn-success" ng-click="change_pass()"><i class="fa-solid fa-floppy-disk"></i> Update</button>
+                            <button type="submit" class="btn btn-danger"><i class="fa-solid fa-circle-xmark"></i> Clear</button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pdfApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment PDF Generator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        html,
+        body {
+            font-family: 'Times New Roman', Times, serif !important;
+            background-color: #edf5f5;
+        }
+
+        .container {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 15mm;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 5px;
+        }
+
+        .hidden-for-display {
+            display: none;
+        }
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .sub-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .content {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .college-logo {
+            width: 150px;
+            height: auto;
+            margin: 20px auto;
+        }
+
+    </style>
+</head>
+
+<body ng-controller="pdfController">
+    <div class="container">
+        <h2>Enter Assignment Details</h2>
+        <form>
+            <div class="form-group">
+                <label>Student ID:</label>
+                <input type="text" ng-model="std_id">
+            </div>
+            <div class="form-group">
+                <label>TU Roll:</label>
+                <input type="text" ng-model="tu_roll">
+            </div>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" ng-model="name">
+            </div>
+            <div class="form-group">
+                <label>Semester:</label>
+                <input type="text" ng-model="sem">
+            </div>
+            <div class="form-group">
+                <label>Department:</label>
+                <input type="text" ng-model="dept">
+            </div>
+            <div class="form-group">
+                <label>Faculty Name:</label>
+                <input type="text" ng-model="f_name">
+            </div>
+            <div class="form-group">
+                <label>Faculty Designation:</label>
+                <input type="text" ng-model="f_designation">
+            </div>
+            <div class="form-group">
+                <label>Date of Submission:</label>
+                <input type="date" ng-model="date_of_submission">
+            </div>
+            <div class="form-group">
+                <label>Subject Title:</label>
+                <input type="text" ng-model="subject_title">
+            </div>
+            <div class="form-group">
+                <label>Subject Code:</label>
+                <input type="text" ng-model="subject_code">
+            </div>
+            <button type="button" class="btn" ng-click="printPDF()">Download PDF</button>
+        </form>
+
+        <div class="a4-page" id="contentToPrint"
+            style="width: 210mm; height: 297mm; padding: 20mm; background: white;">
+            <div class="text-center">
+                <div style="font-size: 24px;"><b>{{page_type}}</b></div>
+                <div class="mb-4" style="font-size: 35px;"><b>Techno College of Engineering Agartala</b></div>
+                <div class="content" style="font-size: 19px;"><b>Course Title:</b> {{ subjects }}</div>
+                <div class="content" style="font-size: 19px;"><b>Course Code:</b> {{ code }}</div>
+                <img src="img/final_tcea.jpg" alt="College Logo" class="college-logo"> <br><br>
+
+                <div class="content" style="font-size: 19px;"><b><u>Submitted to</u></b></div>
+                <div style="font-size: 16px;"><b>{{f_name}}</b></div>
+                <div style="font-size: 16px;">{{f_designation}}</div>
+                <div style="font-size: 16px;">Department of {{f_dept}}</div>
+                <div style="font-size: 16px;">Techno College of Engineering Agartala</div><br><br><br><br>
+
+                <div class="content" style="font-size: 19px;"><b><u>Submitted by</u></b></div>
+                <div style="font-size: 16px;"><b>{{title}} {{name}}</b></div>
+                <div style="font-size: 16px;">Student ID.: {{std_id}}</div>
+                <div style="font-size: 16px;">TU Roll No.: {{tu_roll}}</div>
+                <div style="font-size: 16px;">Department of {{std_dept}}</div>
+                <div style="font-size: 16px;">Semester: {{sem}}</div>
+                <div style="font-size: 16px;">Semester: {{section}}</div>
+                <br><br>
+
+                <div style="font-size: 16px;"><b>Date of Submission - {{dos}}</b></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('pdfApp', []);
+        app.controller('pdfController', function ($scope) {
+            $scope.printPDF = function () {
+                const { jsPDF } = window.jspdf;
+                let content = document.getElementById("contentToPrint");
+                content.style.display = "block";
+                html2canvas(content, {
+                    scale: 2,  
+                    backgroundColor: "#ffffff",
+                    useCORS: true
+                }).then(canvas => {
+                    let pdf = new jsPDF("p", "mm", "a4");
+                    let imgWidth = 210;  // A4 width in mm
+                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let imgData = canvas.toDataURL("image/jpeg", 0.7);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    pdf.save("Assignment.pdf");
+                    content.style.display = "none";
+                });
+            };
+        });
+
+    </script>
+
+</body>
+
+</html>

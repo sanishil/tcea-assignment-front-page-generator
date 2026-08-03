@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pdfApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment PDF Generator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        html,
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 15mm;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 5px;
+        }
+
+        .hidden-for-display {
+            display: none;
+        }
+
+
+        .btn {
+            padding: 10px 15px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body ng-controller="pdfController">
+    <div class="container">
+        <h2>Enter Assignment Details</h2>
+        <form>
+            <div class="form-group">
+                <label>Student ID:</label>
+                <input type="text" ng-model="std_id">
+            </div>
+            <div class="form-group">
+                <label>TU Roll:</label>
+                <input type="text" ng-model="tu_roll">
+            </div>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" ng-model="name">
+            </div>
+            <div class="form-group">
+                <label>Semester:</label>
+                <input type="text" ng-model="sem">
+            </div>
+            <div class="form-group">
+                <label>Department:</label>
+                <input type="text" ng-model="dept">
+            </div>
+            <div class="form-group">
+                <label>Faculty Name:</label>
+                <input type="text" ng-model="f_name">
+            </div>
+            <div class="form-group">
+                <label>Faculty Designation:</label>
+                <input type="text" ng-model="f_designation">
+            </div>
+            <div class="form-group">
+                <label>Date of Submission:</label>
+                <input type="date" ng-model="date_of_submission">
+            </div>
+            <div class="form-group">
+                <label>Subject Title:</label>
+                <input type="text" ng-model="subject_title">
+            </div>
+            <div class="form-group">
+                <label>Subject Code:</label>
+                <input type="text" ng-model="subject_code">
+            </div>
+            <button type="button" class="btn" ng-click="printPDF()">Download PDF</button>
+        </form>
+
+        <div class="a4-page" id="contentToPrint"
+            style="display: none; width: 210mm; height: 297mm; padding: 20mm; background: white;">
+            <div class="text-center">
+                <h2>Assignment</h2>
+                <h3>Techno College of Engineering Agartala</h3>
+                <p><b>Course Title:</b> {{ subject_title }}</p>
+                <p><b>Course Code:</b> {{ subject_code }}</p>
+                <p><b>Submitted to:</b></p>
+                <p>{{ f_name }} ({{ f_designation }})</p>
+                <p>Department of {{ dept }}</p>
+                <p>Techno College of Engineering Agartala</p>
+                <p><b>Submitted by:</b></p>
+                <p>{{ name }}</p>
+                <p>Student ID: {{ std_id }}</p>
+                <p>TU Roll No.: {{ tu_roll }}</p>
+                <p>Department: {{ dept }}</p>
+                <p>Semester: {{ sem }}</p>
+                <p><b>Date of Submission:</b> {{ date_of_submission }}</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('pdfApp', []);
+
+        app.controller('pdfController', function ($scope) {
+            $scope.printPDF = function () {
+                const { jsPDF } = window.jspdf;
+
+                // Show the hidden div temporarily
+                let content = document.getElementById("contentToPrint");
+                content.style.display = "block";
+
+                // Capture the content using html2canvas with optimized settings
+                html2canvas(content, {
+                    scale: 2,  // High-resolution capture
+                    backgroundColor: "#ffffff",
+                    useCORS: true
+                }).then(canvas => {
+                    let pdf = new jsPDF("p", "mm", "a4");
+
+                    let imgWidth = 210;  // A4 width in mm
+                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    // Convert to JPEG with 70% quality for smaller file size
+                    let imgData = canvas.toDataURL("image/jpeg", 0.7);
+
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    pdf.save("Assignment.pdf");
+
+                    // Hide the content again after PDF generation
+                    content.style.display = "none";
+                });
+            };
+        });
+
+    </script>
+
+</body>
+
+</html>

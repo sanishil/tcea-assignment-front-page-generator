@@ -1,0 +1,57 @@
+<div class="container-fluid" ng-init="std_view();">
+   <div class="row" style="padding-top: 20px;">
+      <div class="col-lg-12 mb-3">
+          <div class=" shadow-lg p-4 rounded" >
+              <h5 class="d-flex justify-content-between align-items-center">
+                  <span>Students Section</span>
+                  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-plus"></i></button>
+                </h5>
+                <div class="alert alert-success" ng-if="deleteMessage">
+                  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+                      <use xlink:href="#check-circle-fill" />
+                  </svg>
+                  {{ deleteMessage }}
+              </div>
+                <div class="row pt-2">
+                  <div class="col-md-4 offset-md-8">
+                      <input class="form-control" type="search" ng-model="search" placeholder="Search"
+                          aria-label="Search">
+                  </div>
+              </div>
+              <div class="card-body">
+                  <table class="table">
+                      <thead class="">
+                        <tr class="text-center">
+                          <th style="width: 5%;">#</th>
+                          <th style="width: 8%;">Student ID</th>
+                          <th style="width: 8%;">TU Roll No</th>
+                          <th style="width: 10%;">Name</th>
+                          <th style="width: 5%;">Semester</th>
+                          <th style="width: 5%;">Course</th>
+                          <th style="width: 20%;">Department</th>
+                          <th style="width: 20%;">Last Subject</th>
+                          <th style="width: 9%;" >Last Update</th>
+                          <th style="width: 6%;">Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="x in std_data | filter:search">
+                          <th class="text-center">{{$index+1}}</th>
+                          <td class="text-center">{{x.std_id}}</td>
+                          <td class="text-center">{{x.tu_roll}}</td>
+                          <td class="text-center" style="text-transform: capitalize;">{{x.name}}</td>
+                          <td class="text-center">{{x.sem}}</td>
+                          <td class="text-center">{{x.course}}</td>
+                          <td class="text-center">{{x.std_dept}}</td>
+                          <td>{{x.subjects}}</td>
+                          <td class="text-center" style="font-size: 14px;">{{ x.dou.substring(0, 10) }}</td>
+                          <td class="text-center"><button type="button" class="btn" style="background: linear-gradient(to bottom, #ff0066 0%, #cc33ff 100%); color: white;" ng-click="std_delete(x.id);"><i class="fa-solid fa-trash"></i></button></td>
+                        </tr>
+                    </table>
+                
+              </div>
+            </div>
+         
+      </div>
+   </div>
+</div>
