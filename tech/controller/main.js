@@ -34,7 +34,148 @@ app.config(function ($routeProvider) {
         });
 });
 
-app.controller("dashCtrl", function ($scope, $http) {
+var deptChartInstance = null;
+
+app.controller("dashCtrl", function ($scope, $http, $timeout) {
+    // pagination state for the table on the current page (see tablePager below)
+    $scope.pager = { page: 1, size: 10 };
+
+    // Dashboard chart: students / teachers / subjects per department
+    $scope.dashView = "chart";
+    $scope.dept_chart = function () {
+        $http({
+            url: "api/dash/dept_summary.php",
+            method: "POST",
+            data: {
+                op: "view",
+            },
+        }).then(
+            function (response) {
+                if (response.data.status === "success") {
+                    $scope.dept_summary = response.data.data;
+                    // vertical bars: fixed height, a bit shorter on phones
+                    $scope.deptChartHeight = window.innerWidth < 576 ? "320px" : "400px";
+                    // wait for the height to be applied before drawing
+                    $timeout(function () {
+                        drawDeptChart($scope.dept_summary);
+                    });
+                } else {
+                    $scope.dept_summary = [];
+                    $scope.deptChartError = response.data.message;
+                }
+            },
+            function () {
+                $scope.deptChartError = "Could not load chart data";
+            }
+        );
+    };
+
+    function drawDeptChart(rows) {
+        var canvas = document.getElementById("deptChart");
+        if (!canvas || typeof Chart === "undefined") return;
+        if (deptChartInstance) deptChartInstance.destroy();
+
+        var muted = "#52514e";
+        Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+        deptChartInstance = new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: rows.map(function (r) { return r.dept_name; }),
+                datasets: [
+                    { label: "Students", data: rows.map(function (r) { return r.students; }), backgroundColor: "#2a78d6" },
+                    { label: "Teachers", data: rows.map(function (r) { return r.teachers; }), backgroundColor: "#eb6834" },
+                    { label: "Subjects", data: rows.map(function (r) { return r.subjects; }), backgroundColor: "#1baf7a" },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                datasets: {
+                    bar: {
+                        borderRadius: 4,
+                        borderSkipped: "start",
+                        barPercentage: 0.85,
+                        categoryPercentage: 0.8,
+                    },
+                },
+                interaction: { mode: "index", axis: "x", intersect: false },
+                plugins: {
+                    legend: {
+                        position: "top",
+                        align: "start",
+                        labels: { color: muted, usePointStyle: true, pointStyle: "rectRounded", boxWidth: 10 },
+                    },
+                    tooltip: { padding: 10 },
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: muted,
+                            autoSkip: false,
+                            // flat labels on wide screens; phones still need to tilt them
+                            maxRotation: window.innerWidth < 576 ? 50 : 0,
+                            // wrap names onto at most two lines; the tooltip still shows the full name
+                            callback: function (value) {
+                                var label = this.getLabelForValue(value);
+                                // phones: one short tilted line (wrapped lines overlap when tilted)
+                                if (window.innerWidth < 576) return label.length > 12 ? label.slice(0, 11) + "…" : label;
+                                var max = 16; // characters per line
+                                var lines = [], line = "";
+                                label.split(" ").forEach(function (word) {
+                                    if (line && (line + " " + word).length > max) {
+                                        lines.push(line);
+                                        line = word;
+                                    } else {
+                                        line = line ? line + " " + word : word;
+                                    }
+                                });
+                                lines.push(line);
+                                if (lines.length > 2) lines = [lines[0], lines[1].slice(0, max - 1) + "…"];
+                                return lines;
+                            },
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: muted, precision: 0 },
+                        grid: { color: "#eef0f2" },
+                        border: { display: false },
+                    },
+                },
+            },
+        });
+    }
+
+    // Student list: semester tabs (All, 1st ... 8th)
+    $scope.semSel = { value: "" }; // "" = All
+    $scope.semTabs = [];
+
+    function buildSemTabs(rows) {
+        var sems = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+        // keep any other semester values that exist in the data
+        rows.forEach(function (r) {
+            if (r.sem && sems.indexOf(r.sem) === -1) sems.push(r.sem);
+        });
+        var tabs = [{ value: "", label: "All", count: rows.length }];
+        sems.forEach(function (s) {
+            tabs.push({
+                value: s,
+                label: s,
+                count: rows.filter(function (r) { return r.sem == s; }).length,
+            });
+        });
+        return tabs;
+    }
+
+    $scope.bySem = function (x) {
+        return !$scope.semSel.value || x.sem == $scope.semSel.value;
+    };
+
+    $scope.pickSem = function (value) {
+        $scope.semSel.value = value;
+        $scope.pager.page = 1;
+    };
 
     // "dashboard"
     $scope.std_view = function () {
@@ -53,6 +194,7 @@ app.controller("dashCtrl", function ($scope, $http) {
                     $scope.std_data = []; // Set empty array
                     $scope.noDataMessage = response.data.message;
                 }
+                $scope.semTabs = buildSemTabs($scope.std_data);
             },
             function () {
                 alert("Error! Fetching Problem in std_data()");
@@ -532,5 +674,68 @@ app.controller("dashCtrl", function ($scope, $http) {
         alert("Error! Unable to update password");
       }
     );
+  };
+});
+
+// Pagination bar for tables. Usage:
+//   <tr ng-repeat="x in (rows = (data | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
+//   <table-pager total="rows.length" pager="pager"></table-pager>
+app.directive("tablePager", function () {
+  return {
+    restrict: "E",
+    scope: { total: "<", pager: "=" },
+    template:
+      '<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-2" ng-if="total > 0">' +
+      '  <div class="d-flex align-items-center gap-2 small text-muted">' +
+      '    <span>Show</span>' +
+      '    <select class="form-select form-select-sm w-auto" ng-model="pager.size" ng-options="s.value as s.label for s in sizes" ng-change="pager.page = 1"></select>' +
+      '    <span>{{ from() }}–{{ to() }} of {{ total }}</span>' +
+      '  </div>' +
+      '  <ul class="pagination pagination-sm mb-0">' +
+      '    <li class="page-item" ng-class="{ disabled: pager.page == 1 }"><a class="page-link" href="" ng-click="go(pager.page - 1)">&laquo;</a></li>' +
+      '    <li class="page-item" ng-repeat="p in pageList() track by $index" ng-class="{ active: p == pager.page, disabled: p == gap }">' +
+      '      <a class="page-link" href="" ng-click="go(p)">{{ p }}</a></li>' +
+      '    <li class="page-item" ng-class="{ disabled: pager.page == pages() }"><a class="page-link" href="" ng-click="go(pager.page + 1)">&raquo;</a></li>' +
+      '  </ul>' +
+      '</div>',
+    link: function (scope) {
+      // "All" is a very large page size, so every row fits on page 1
+      scope.sizes = [
+        { value: 10, label: "10" },
+        { value: 25, label: "25" },
+        { value: 50, label: "50" },
+        { value: 100, label: "100" },
+        { value: Number.MAX_SAFE_INTEGER, label: "All" },
+      ];
+      scope.gap = "…";
+
+      scope.pages = function () {
+        return Math.max(1, Math.ceil((scope.total || 0) / scope.pager.size));
+      };
+      scope.from = function () {
+        return (scope.pager.page - 1) * scope.pager.size + 1;
+      };
+      scope.to = function () {
+        return Math.min(scope.pager.page * scope.pager.size, scope.total);
+      };
+      scope.go = function (p) {
+        if (typeof p === "number" && p >= 1 && p <= scope.pages()) scope.pager.page = p;
+      };
+
+      // 1 … 4 5 6 … 20
+      scope.pageList = function () {
+        var n = scope.pages(), cur = scope.pager.page, list = [];
+        for (var i = 1; i <= n; i++) {
+          if (i == 1 || i == n || Math.abs(i - cur) <= 1) list.push(i);
+          else if (list[list.length - 1] !== scope.gap) list.push(scope.gap);
+        }
+        return list;
+      };
+
+      // stay on a valid page when rows are deleted or the search shrinks the list
+      scope.$watchGroup(["total", "pager.size"], function () {
+        if (scope.pager.page > scope.pages()) scope.pager.page = scope.pages();
+      });
+    },
   };
 });

@@ -12,9 +12,17 @@
                   </svg>
                   {{ deleteMessage }}
               </div>
-                <div class="row pt-2">
-                  <div class="col-md-4 offset-md-8">
-                      <input class="form-control" type="search" ng-model="search" placeholder="Search"
+                <div class="row pt-2 g-2 align-items-center">
+                  <div class="col-lg">
+                      <div class="sem-tabs" role="group" aria-label="Filter by semester">
+                          <button type="button" class="sem-tab" ng-repeat="s in semTabs track by s.value"
+                              ng-class="{ active: semSel.value == s.value }" ng-click="pickSem(s.value)">
+                              {{ s.label }} <span class="count">{{ s.count }}</span>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="col-lg-3">
+                      <input class="form-control" type="search" ng-model="search" ng-change="pager.page = 1" placeholder="Search"
                           aria-label="Search">
                   </div>
               </div>
@@ -35,8 +43,8 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="x in std_data | filter:search">
-                          <th class="text-center">{{$index+1}}</th>
+                        <tr ng-repeat="x in (rows = (std_data | filter:bySem | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
+                          <th class="text-center">{{(pager.page-1)*pager.size + $index+1}}</th>
                           <td class="text-center">{{x.std_id}}</td>
                           <td class="text-center">{{x.tu_roll}}</td>
                           <td class="text-center" style="text-transform: capitalize;">{{x.name}}</td>
@@ -45,9 +53,10 @@
                           <td class="text-center">{{x.std_dept}}</td>
                           <td>{{x.subjects}}</td>
                           <td class="text-center" style="font-size: 14px;">{{ x.doe.substring(0, 10) }}</td>
-                          <td class="text-center"><button type="button" class="btn" style="background: linear-gradient(to bottom, #ff0066 0%, #cc33ff 100%); color: white;" ng-click="std_delete(x.id);"><i class="fa-solid fa-trash"></i></button></td>
+                          <td class="text-center"><button type="button" class="btn btn-danger" ng-click="std_delete(x.id);"><i class="fa-solid fa-trash"></i></button></td>
                         </tr>
                     </table>
+                    <table-pager total="rows.length" pager="pager"></table-pager>
                 
               </div>
             </div>

@@ -48,6 +48,36 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
   // pagination state for the table on the current page (see tablePager below)
   $scope.pager = { page: 1, size: 10 };
 
+  // Student list: semester tabs (All, 1st ... 8th)
+  $scope.semSel = { value: "" }; // "" = All
+  $scope.semTabs = [];
+
+  function buildSemTabs(rows) {
+    var sems = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+    // keep any other semester values that exist in the data
+    rows.forEach(function (r) {
+      if (r.sem && sems.indexOf(r.sem) === -1) sems.push(r.sem);
+    });
+    var tabs = [{ value: "", label: "All", count: rows.length }];
+    sems.forEach(function (s) {
+      tabs.push({
+        value: s,
+        label: s,
+        count: rows.filter(function (r) { return r.sem == s; }).length,
+      });
+    });
+    return tabs;
+  }
+
+  $scope.bySem = function (x) {
+    return !$scope.semSel.value || x.sem == $scope.semSel.value;
+  };
+
+  $scope.pickSem = function (value) {
+    $scope.semSel.value = value;
+    $scope.pager.page = 1;
+  };
+
   // "dashboard"
   $scope.std_view = function () {
     $http({
@@ -65,6 +95,7 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
           $scope.std_data = []; // Set empty array
           $scope.noDataMessage = response.data.message;
         }
+        $scope.semTabs = buildSemTabs($scope.std_data);
       },
       function () {
         alert("Error! Fetching Problem in std_data()");
@@ -85,8 +116,8 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
       function (response) {
         if (response.data.status === "success") {
           $scope.dept_summary = response.data.data;
-          // ~56px per department so the three bars never get squashed
-          $scope.deptChartHeight = $scope.dept_summary.length * 56 + 70 + "px";
+          // vertical bars: fixed height, a bit shorter on phones
+          $scope.deptChartHeight = window.innerWidth < 576 ? "320px" : "400px";
           // wait for the height to be applied before drawing
           $timeout(function () {
             drawDeptChart($scope.dept_summary);
@@ -108,6 +139,7 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
     if (deptChartInstance) deptChartInstance.destroy();
 
     var muted = "#52514e";
+    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     deptChartInstance = new Chart(canvas, {
       type: "bar",
       data: {
@@ -119,7 +151,6 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
         ],
       },
       options: {
-        indexAxis: "y", // horizontal bars keep long department names readable on phones
         responsive: true,
         maintainAspectRatio: false,
         datasets: {
@@ -130,7 +161,7 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
             categoryPercentage: 0.8,
           },
         },
-        interaction: { mode: "index", axis: "y", intersect: false },
+        interaction: { mode: "index", axis: "x", intersect: false },
         plugins: {
           legend: {
             position: "top",
@@ -141,23 +172,38 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
         },
         scales: {
           x: {
-            beginAtZero: true,
-            ticks: { color: muted, precision: 0 },
-            grid: { color: "#eef0f2" },
-            border: { display: false },
-          },
-          y: {
             grid: { display: false },
             ticks: {
               color: muted,
               autoSkip: false,
-              // shorten names on small screens; the tooltip still shows the full name
+              // flat labels on wide screens; phones still need to tilt them
+              maxRotation: window.innerWidth < 576 ? 50 : 0,
+              // wrap names onto at most two lines; the tooltip still shows the full name
               callback: function (value) {
                 var label = this.getLabelForValue(value);
-                var max = window.innerWidth < 576 ? 16 : 32;
-                return label.length > max ? label.slice(0, max - 1) + "…" : label;
+                // phones: one short tilted line (wrapped lines overlap when tilted)
+                if (window.innerWidth < 576) return label.length > 12 ? label.slice(0, 11) + "…" : label;
+                var max = 16; // characters per line
+                var lines = [], line = "";
+                label.split(" ").forEach(function (word) {
+                  if (line && (line + " " + word).length > max) {
+                    lines.push(line);
+                    line = word;
+                  } else {
+                    line = line ? line + " " + word : word;
+                  }
+                });
+                lines.push(line);
+                if (lines.length > 2) lines = [lines[0], lines[1].slice(0, max - 1) + "…"];
+                return lines;
               },
             },
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { color: muted, precision: 0 },
+            grid: { color: "#eef0f2" },
+            border: { display: false },
           },
         },
       },

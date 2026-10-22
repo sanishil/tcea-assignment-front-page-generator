@@ -42,36 +42,36 @@ $con->close();
    <!-- ================= STAT CARDS ================= -->
    <div class="row g-3" style="padding-top: 20px;">
       <div class="col-6 col-xl-3">
-         <div class="card stat-card shadow-sm h-100">
+         <div class="card stat-card bg-danger text-white shadow-sm h-100">
             <div class="card-body">
-               <span class="stat-icon" style="background: #fde8e8; color: #e34948;"><i class="fa-solid fa-users"></i></span>
+               <span class="stat-icon"><i class="fa-solid fa-users"></i></span>
                <div class="stat-label">Registered Students</div>
                <div class="stat-value"><?php echo $total_std; ?></div>
             </div>
          </div>
       </div>
       <div class="col-6 col-xl-3">
-         <div class="card stat-card shadow-sm h-100">
+         <div class="card stat-card bg-info text-dark shadow-sm h-100">
             <div class="card-body">
-               <span class="stat-icon" style="background: #fdeadf; color: #d95926;"><i class="fa-solid fa-chalkboard-user"></i></span>
+               <span class="stat-icon"><i class="fa-solid fa-chalkboard-user"></i></span>
                <div class="stat-label">Teachers</div>
                <div class="stat-value"><?php echo $total_teacher; ?></div>
             </div>
          </div>
       </div>
       <div class="col-6 col-xl-3">
-         <div class="card stat-card shadow-sm h-100">
+         <div class="card stat-card bg-success text-white shadow-sm h-100">
             <div class="card-body">
-               <span class="stat-icon" style="background: #dcf3ea; color: #148a60;"><i class="fa-solid fa-book"></i></span>
+               <span class="stat-icon"><i class="fa-solid fa-book"></i></span>
                <div class="stat-label">Subjects</div>
                <div class="stat-value"><?php echo $total_subjects; ?></div>
             </div>
          </div>
       </div>
       <div class="col-6 col-xl-3">
-         <div class="card stat-card shadow-sm h-100">
+         <div class="card stat-card bg-secondary text-white shadow-sm h-100">
             <div class="card-body">
-               <span class="stat-icon" style="background: #e1ecfa; color: #2a78d6;"><i class="fa-solid fa-building"></i></span>
+               <span class="stat-icon"><i class="fa-solid fa-building"></i></span>
                <div class="stat-label">Departments</div>
                <div class="stat-value"><?php echo $total_dept; ?></div>
             </div>
