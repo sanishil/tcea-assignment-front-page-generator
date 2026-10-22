@@ -2,6 +2,19 @@
 
 error_reporting(0);
 session_start();
+
+// math captcha from captcha.php: single use, valid for 5 minutes
+$captcha_ok = isset($_SESSION['captcha_answer'], $_POST['captcha'])
+  && time() - $_SESSION['captcha_time'] <= 300
+  && preg_match('/^\d+$/', trim($_POST['captcha']))
+  && (int) trim($_POST['captcha']) === $_SESSION['captcha_answer'];
+unset($_SESSION['captcha_answer'], $_SESSION['captcha_time']);
+if (!$captcha_ok) {
+  session_write_close();
+  echo "<script>window.location.href='login.html?error=captcha';</script>";
+  exit;
+}
+
 include 'tech/api/connect.php';
 $user_id = mysqli_real_escape_string($con, $_POST['user']);
 $pass = mysqli_real_escape_string($con, $_POST['pass']);
@@ -17,8 +30,7 @@ if ($c > 0) {
     $is_active = $row['is_active'];
   }
   if ($is_active == 1) {
-    echo "<script>alert('You are already logged in on another device. Logout there or wait 10 minutes. 🚫👨‍💻');</script>";
-    echo "<script>window.location.href='login.html';</script>";
+    echo "<script>window.location.href='login.html?error=active';</script>";
   } else {
     if ($type == 'Admin') {
       $_SESSION['user_id'] = $user_id;
@@ -50,8 +62,7 @@ if ($c > 0) {
 } else {
   $_SESSION['type'] = "";
   session_write_close();
-  echo "<script>alert('Sorry Userid and Password Mismatch');</script>";
-  echo "<script>window.location.href='login.html';</script>";
+  echo "<script>window.location.href='login.html?error=mismatch';</script>";
 }
 mysqli_close($con);
 ?>

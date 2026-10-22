@@ -7,94 +7,569 @@
   <title>Login | TCEA</title>
   <link rel="icon" href="img/final_tcea.jpg">
 
-
-  <!-- Bootstrap CDN -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
-
-  <!-- Font Awesome CDN -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet" />
-
-  <!-- Shared look -->
-  <link rel="stylesheet" href="assets/css/modern.css" />
+  <!-- start fetching the campus photo before the CSS is even parsed -->
+  <link rel="preload" as="image" href="img/campus.webp" type="image/webp" fetchpriority="high">
 
   <style>
-    .object-fit-cover {
+    :root {
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --border: #dfe3ea;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-ring: rgba(79, 70, 229, 0.15);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /* ================= Photo panel ================= */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: #c9d6e3;
+    }
+
+    /* tiny inline blurred copy shows instantly while the real photo loads */
+    .hero-blur,
+    .hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      object-position: center 70%;
+    }
+
+    .hero-blur {
+      background: center 70% / cover no-repeat url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAUABADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDpvMNNeYB1jZwGbopPJrAn1R1tJyLva6LlFxywwe9S6S8U8Vz5bSmXkFkBbHGeSf0qvaq10T7Jp2bIjpltLLukDNvByN3HHArVXTrZLWKRIyrM/OGPpjP5UUVx3bN4bo//2Q==");
+      filter: blur(24px);
+      transform: scale(1.15);
+    }
+
+    .hero img {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .hero.loaded img { opacity: 1; }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 40%, rgba(15, 23, 42, 0.78) 100%);
+    }
+
+    .hero-caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      padding: 2.5rem;
+      color: #fff;
+    }
+
+    .hero-caption h2 {
+      margin: 0 0 0.4rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .hero-caption p {
+      margin: 0;
+      font-size: 1rem;
+      opacity: 0.85;
+    }
+
+    /* ================= Form panel ================= */
+    .panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2.5rem 1.5rem 1.5rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .brand img {
+      flex: 0 0 auto;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+    }
+
+    .brand span {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+      color: #347ec4;
+    }
+
+    h1 {
+      margin: 0 0 0.4rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0 0 1.75rem;
+      color: var(--text-muted);
+    }
+
+    .field { margin-bottom: 1.1rem; }
+
+    .field label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .control {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .control > svg {
+      position: absolute;
+      left: 0.9rem;
+      color: #9ca3af;
+      pointer-events: none;
+      transition: color 0.15s ease;
+    }
+
+    .control input {
+      width: 100%;
+      height: 48px;
+      padding: 0 2.9rem 0 2.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-size: 1rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .control input::placeholder { color: #9ca3af; }
+
+    .control input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-ring);
+    }
+
+    .control:focus-within > svg { color: var(--primary); }
+
+    .toggle-pass {
+      position: absolute;
+      right: 0.4rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 8px;
+      background: none;
+      color: #9ca3af;
+      cursor: pointer;
+    }
+
+    .toggle-pass:hover { color: var(--text); background: #f3f4f6; }
+
+    .toggle-pass:focus-visible { outline: 2px solid var(--primary); }
+
+    .toggle-pass .eye-off { display: none; }
+    .toggle-pass.on .eye { display: none; }
+    .toggle-pass.on .eye-off { display: block; }
+
+    /* math captcha: image from captcha.php, refresh, answer */
+    .captcha {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .captcha-img {
+      flex: 0 0 auto;
+      height: 48px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #eef2ff;
+    }
+
+    .captcha-img img {
+      display: block;
+      width: 150px;
+      height: 46px;
+    }
+
+    .captcha-refresh {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .captcha-refresh:hover { color: var(--primary); border-color: var(--primary); }
+
+    .captcha-refresh:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--primary-ring); }
+
+    .captcha-refresh.spin svg { animation: spin 0.5s ease; }
+
+    .captcha .control { flex: 1; min-width: 0; }
+
+    .captcha .control input { padding: 0 0.9rem; }
+
+    .submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      height: 48px;
+      margin-top: 1.6rem;
+      border: 0;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: #fff;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+      transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .submit:hover { background: var(--primary-hover); }
+
+    .submit:active { transform: translateY(1px); }
+
+    .submit:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--primary-ring); }
+
+    .submit[disabled] { opacity: 0.8; cursor: progress; }
+
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .submit[disabled] .spinner { display: block; }
+    .submit[disabled] .arrow { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--primary); }
+
+    /* ================= Tablet / phone ================= */
+    @media (max-width: 899.98px) {
+      .page {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      .hero { height: 220px; }
+
+      /* bottom padding clears the card that overlaps the photo */
+      .hero-caption { padding: 1.25rem 1rem 2.5rem; }
+
+      .hero-caption h2 { font-size: 1.2rem; }
+
+      .hero-caption p { font-size: 0.85rem; }
+
+      .panel {
+        justify-content: flex-start;
+        padding: 0 1rem 1.25rem;
+      }
+
+      /* form sheet slides up over the photo */
+      .card {
+        position: relative;
+        margin-top: -1.5rem;
+        padding: 1.75rem 1.25rem 1.5rem;
+        border-radius: 20px;
+        background: var(--surface);
+        box-shadow: 0 12px 32px rgba(16, 24, 40, 0.12);
+      }
+
+      .brand { margin-bottom: 1.5rem; }
+
+      .brand img { width: 56px; height: 56px; }
+
+      .brand span { font-size: 1rem; }
+
+      h1 { font-size: 1.5rem; }
+
+      footer { margin-top: 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero img, .submit { transition: none; }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container d-flex justify-content-center align-items-center min-vh-100 flex-column">
-    <div class="row shadow-lg rounded overflow-hidden bg-white login-card" style="max-width: 900px; width: 100%;">
+  <main class="page">
 
-      <!-- Left Side Image -->
-      <div class="col-lg-6 d-none d-lg-block p-0">
-        <img src="img/back_img.jpg" alt="Campus" class="img-fluid h-100 w-100 object-fit-cover">
+    <!-- Campus photo -->
+    <aside class="hero" id="hero">
+      <div class="hero-blur" aria-hidden="true"></div>
+      <picture>
+        <source srcset="img/campus.webp" type="image/webp">
+        <img src="img/campus.jpg" alt="Techno College of Engineering Agartala campus" width="864" height="1080"
+          decoding="async" fetchpriority="high" onload="this.closest('.hero').classList.add('loaded')">
+      </picture>
+      <div class="hero-caption">
+        <h2>Techno College of Engineering Agartala</h2>
+        <p>Student activity &amp; academic records portal</p>
       </div>
+    </aside>
 
-      <!-- Login Box -->
-      <div class="col-lg-6 p-4">
-        <h4 class="text-center mb-4">
-            <p class="fw-bold fs-5" style="color:#347ec4;"><b>TECHNO COLLEGE OF ENGINEERING AGARTALA</b>
-          </p>
-          <i class="fa-solid fa-right-to-bracket text-primary"></i> Login
-        </h4>
+    <!-- Login form -->
+    <section class="panel">
+      <div class="card">
 
-        <form action="login.php" method="post">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Username</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-              <input type="text" name="user" class="form-control" placeholder="Enter Username" required>
+        <div class="brand">
+          <img src="img/final_tcea.jpg" alt="TCEA logo" width="68" height="68">
+          <span>TECHNO COLLEGE OF<br>ENGINEERING AGARTALA</span>
+        </div>
+
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in to continue to your dashboard.</p>
+
+        <form action="login.php" method="post" id="loginForm">
+          <div class="field">
+            <label for="user">Username</label>
+            <div class="control">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <input type="text" id="user" name="user" placeholder="Enter your username" autocomplete="username"
+                autocapitalize="off" spellcheck="false" required autofocus>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Password</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-              <input type="password" name="pass" class="form-control" placeholder="Enter Password" required>
+          <div class="field">
+            <label for="pass">Password</label>
+            <div class="control">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <input type="password" id="pass" name="pass" placeholder="Enter your password"
+                autocomplete="current-password" required>
+              <button type="button" class="toggle-pass" id="togglePass" aria-label="Show password">
+                <svg class="eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg class="eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19" />
+                  <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  <path d="M1 1l22 22" />
+                </svg>
+              </button>
             </div>
           </div>
 
-          <div class="d-grid mt-4">
-            <button type="submit" class="btn btn-primary fw-semibold">
-              <i class="fa-solid fa-right-to-bracket"></i> Login
-            </button>
+          <div class="field">
+            <label for="captcha">Solve to continue</label>
+            <div class="captcha">
+              <div class="captcha-img">
+                <img src="captcha.php" id="captchaImg" alt="Math question: solve the sum shown" width="150"
+                  height="46">
+              </div>
+              <button type="button" class="captcha-refresh" id="captchaRefresh" aria-label="Get a new question"
+                title="New question">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 12a9 9 0 1 1-2.64-6.36L21 8" />
+                  <path d="M21 3v5h-5" />
+                </svg>
+              </button>
+              <div class="control">
+                <input type="text" id="captcha" name="captcha" placeholder="Answer" inputmode="numeric"
+                  pattern="[0-9]*" maxlength="3" autocomplete="off" required>
+              </div>
+            </div>
           </div>
+
+          <button type="submit" class="submit" id="submitBtn">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="label">Sign in</span>
+            <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </button>
         </form>
 
+        <footer>
+          &copy; 2026 Developed By
+          <a href="https://www.linkedin.com/in/sanishil" target="_blank" rel="noopener">Mr. Sani Shil</a>
+          <br>
+          Activity Reviewed by
+          <a href="https://www.linkedin.com/in/nabakallol-deb-b096b7375/" target="_blank" rel="noopener">Mr.
+            Nabakallol Deb</a>
+          &amp;
+          <a href="https://www.instagram.com/paulsagar.29/" target="_blank" rel="noopener">Mr. Sagar Rudra Paul</a>
+        </footer>
+
       </div>
-    </div>
+    </section>
 
-    <!-- Credit Section – 20px below card -->
-    <footer class="text-center mt-3">
-     <p class="mb-1 small">
-        <i class="fa-solid fa-copyright"></i> 2025 Developed By
-        <a href="https://www.linkedin.com/in/sanishil" class="text-dark fw-semibold text-decoration-none"
-          target="_blank">
-          Mr. Sani Shil
-        </a> | Activity Reviewed by
-        <a href="https://www.instagram.com/paulsagar28?igsh=MW9va3k4Z2M1OGl2bw=="
-          class="text-dark fw-semibold text-decoration-none" target="_blank">
-          Mr. Sagar Rudra Paul
-        </a>
-        
-      </p> 
-        
-    </footer>
+  </main>
 
-  </div>
+  <script src="assets/js/toast.js"></script>
+  <script>
+    // photo may already be cached and loaded before onload was attached
+    (function () {
+      var hero = document.getElementById('hero');
+      var img = hero.querySelector('img');
+      if (img.complete && img.naturalWidth) hero.classList.add('loaded');
+    })();
 
-  <!-- JS CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script>
-    if (new URLSearchParams(location.search).has('timeout')) {
-      alert('Your session expired after 10 minutes of inactivity. Please login again.');
-      history.replaceState(null, '', 'login.html');
+    // login.php / logout.php send the user back here with a reason in the URL
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var errors = {
+        mismatch: ['Sorry, the username and password do not match.', 'error'],
+        captcha: ['Wrong answer to the sum. Please try the new question.', 'error'],
+        active: ['You are already logged in on another device. Logout there or wait 10 minutes.', 'warning']
+      };
+      var shown = false;
+      if (params.has('timeout')) {
+        showToast('Your session expired after 10 minutes of inactivity. Please login again.', 'warning');
+        shown = true;
+      }
+      if (errors[params.get('error')]) {
+        showToast(errors[params.get('error')][0], errors[params.get('error')][1]);
+        shown = true;
+      }
+      // drop the reason so a refresh doesn't show the toast again
+      if (shown) history.replaceState(null, '', 'login.html');
+    })();
+
+    var togglePass = document.getElementById('togglePass');
+    var pass = document.getElementById('pass');
+    togglePass.addEventListener('click', function () {
+      var show = pass.type === 'password';
+      pass.type = show ? 'text' : 'password';
+      togglePass.classList.toggle('on', show);
+      togglePass.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      pass.focus();
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', function () {
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.querySelector('.label').textContent = 'Signing in…';
+    });
+
+    // each question works once, so fetch a fresh image (the timestamp stops the browser reusing a cached one)
+    function newCaptcha() {
+      document.getElementById('captchaImg').src = 'captcha.php?' + Date.now();
+      document.getElementById('captcha').value = '';
     }
+
+    var captchaRefresh = document.getElementById('captchaRefresh');
+    captchaRefresh.addEventListener('click', function () {
+      newCaptcha();
+      captchaRefresh.classList.remove('spin');
+      void captchaRefresh.offsetWidth; // restart the spin animation
+      captchaRefresh.classList.add('spin');
+      document.getElementById('captcha').focus();
+    });
+
+    // coming back via the browser Back button restores the page from cache with the button still disabled
+    // and an already-used captcha question
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) {
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = false;
+        btn.querySelector('.label').textContent = 'Sign in';
+        newCaptcha();
+      }
+    });
   </script>
 </body>
 

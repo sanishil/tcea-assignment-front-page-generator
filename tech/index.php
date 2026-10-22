@@ -11,6 +11,7 @@
       <link rel="stylesheet" href="../assets/fw/css/all.min.css"> -->
    <!-- Font Awesome 6 Free -->
    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet" />
+   <script src="../assets/js/toast.js"></script>
    <script src="../assets/js/angular.min.js"></script>
    <script src="../assets/js/angular-router.min.js"></script>
    <script src="../assets/js/angular-cookies.min.js"></script>
@@ -158,16 +159,20 @@
 
       <footer class="bg-light text-dark text-center shadow-sm py-3">
          <p class="mb-0">
-            <i class="fa-solid fa-copyright"></i> 2025 Developed By
-            <a href="https://www.linkedin.com/in/sanishil" class="text-dark text-decoration-none" target="_blank">
+            <i class="fa-solid fa-copyright"></i> 2026 Developed By <b>
+            <a href="https://www.linkedin.com/in/sanishil" class="text-dark fw-semibold text-decoration-none"
+               target="_blank">
                Mr. Sani Shil
-            </a> | Activity Reviewed by
-        <a href="https://www.instagram.com/paulsagar28?igsh=MW9va3k4Z2M1OGl2bw=="
-          class="text-dark fw-semibold text-decoration-none" target="_blank">
-          Mr. Sagar Rudra Paul
-        </a>
-
-         </p> 
+            </a></b> | Activity Reviewed by <b>
+            <a href="https://www.linkedin.com/in/nabakallol-deb-b096b7375/"
+               class="text-dark fw-semibold text-decoration-none" target="_blank">
+               Mr. Nabakallol Deb
+            </a></b> &amp; <b>
+            <a href="https://www.instagram.com/paulsagar.29/"
+               class="text-dark fw-semibold text-decoration-none" target="_blank">
+               Mr. Sagar Rudra Paul
+            </a></b>
+         </p>
           
       </footer>
    </div>

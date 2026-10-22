@@ -1,4 +1,4 @@
-/* Shared look for admin/, tech/ and login.html */
+/* Shared look for admin/ and tech/ */
 
 :root {
    --font: Arial, Helvetica, sans-serif;
@@ -648,24 +648,6 @@ input[type="search"].form-control {
    position: relative;
    width: 100%;
    min-height: 320px;
-}
-
-/* ================= Login page ================= */
-.login-card {
-   border-radius: 22px !important;
-   border: 1px solid var(--border);
-   box-shadow: var(--shadow-lg) !important;
-}
-
-/* keep the form vertically centred next to the photo */
-.login-card > div:last-child {
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-}
-
-.login-card .btn {
-   padding: 0.65rem 1rem;
 }
 
 /* ================= Phones ================= */
