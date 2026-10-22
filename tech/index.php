@@ -160,8 +160,8 @@
       <footer class="bg-light text-dark text-center shadow-sm py-3">
          <p class="mb-0">
             <i class="fa-solid fa-copyright"></i> 2026 Developed By <b>
-            <a href="https://www.linkedin.com/in/sanishil" class="text-dark fw-semibold text-decoration-none"
-               target="_blank">
+            <a role="button" class="text-dark fw-semibold text-decoration-none"
+               data-bs-toggle="modal" data-bs-target="#developerModal">
                Mr. Sani Shil
             </a></b> | Activity Reviewed by <b>
             <a href="https://www.linkedin.com/in/nabakallol-deb-b096b7375/"
@@ -173,8 +173,29 @@
                Mr. Sagar Rudra Paul
             </a></b>
          </p>
-          
+
       </footer>
+
+      <!-- Developer links popup -->
+      <div class="modal fade" id="developerModal" tabindex="-1" aria-labelledby="developerModalLabel"
+         aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content text-center">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="developerModalLabel">Mr. Sani Shil</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body d-grid gap-2">
+                  <a href="https://www.linkedin.com/in/sanishil" target="_blank" class="btn btn-primary">
+                     <i class="fa-brands fa-linkedin"></i> LinkedIn
+                  </a>
+                  <a href="https://sanishil.site.je/" target="_blank" class="btn btn-dark">
+                     <i class="fa-solid fa-briefcase"></i> Portfolio
+                  </a>
+               </div>
+            </div>
+         </div>
+      </div>
    </div>
 
    <script src="controller/main.js"></script>
