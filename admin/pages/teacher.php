@@ -26,7 +26,7 @@ include "../api/connect.php";
                 </div>
 
                 <div class="card-body">
-                    <table class="table">
+                    <div class="table-responsive"><table class="table">
                         <thead class="table-light border-dark">
                             <tr class="text-center">
                                 <th style="width: 10%;">#</th>
@@ -51,7 +51,7 @@ include "../api/connect.php";
                                 </td>
                             </tr>
                         </tbody>
-                    </table> <!-- ✅ Fixed missing closing table tag -->
+                    </table></div> <!-- ✅ Fixed missing closing table tag -->
 
                     <div class="row">
                         <div class="col-lg-4"></div>

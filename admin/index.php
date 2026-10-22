@@ -23,7 +23,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != true) {
    <script src="../assets/js/angular.min.js"></script>
    <script src="../assets/js/angular-router.min.js"></script>
    <script src="../assets/js/angular-cookies.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
    <!-- Bootstrap CSS -->
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
@@ -62,9 +62,266 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != true) {
          height: 100% !important;
       }
    </style> -->
+   <style>
+      :root {
+         --sidebar-width: 260px;
+         --sidebar-border: #e5e7eb;
+         --sidebar-text: #374151;
+         --sidebar-muted: #9ca3af;
+         --sidebar-hover: #f3f4f6;
+         --sidebar-active-bg: #eef2ff;
+         --sidebar-active-text: #4f46e5;
+         --accent: #818CF8;
+      }
+
+      body {
+         background-color: #edf5f5;
+         min-height: 100vh;
+      }
+
+      /* ---------- Sidebar ---------- */
+      .sidebar {
+         position: fixed;
+         top: 0;
+         left: 0;
+         bottom: 0;
+         width: var(--sidebar-width);
+         background: #fff;
+         border-right: 1px solid var(--sidebar-border);
+         box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+         display: flex;
+         flex-direction: column;
+         z-index: 1040;
+         transition: transform 0.25s ease;
+      }
+
+      .sidebar-brand {
+         padding: 1rem;
+         text-align: center;
+         border-bottom: 1px solid var(--sidebar-border);
+      }
+
+      .sidebar-brand img {
+         max-height: 80px;
+      }
+
+      .sidebar-menu {
+         flex: 1;
+         overflow-y: auto;
+         padding: 1rem 0.75rem;
+      }
+
+      .sidebar-heading {
+         font-size: 0.7rem;
+         font-weight: 700;
+         letter-spacing: 0.08em;
+         text-transform: uppercase;
+         color: var(--sidebar-muted);
+         padding: 0.75rem 0.75rem 0.35rem;
+      }
+
+      .sidebar-link {
+         display: flex;
+         align-items: center;
+         gap: 0.75rem;
+         width: 100%;
+         padding: 0.6rem 0.75rem;
+         margin-bottom: 0.15rem;
+         border: 0;
+         border-radius: 0.5rem;
+         background: none;
+         color: var(--sidebar-text);
+         font-weight: 500;
+         text-align: left;
+         text-decoration: none;
+      }
+
+      .sidebar-link .icon {
+         width: 1.25rem;
+         text-align: center;
+      }
+
+      .sidebar-link:hover {
+         background: var(--sidebar-hover);
+         color: var(--sidebar-text);
+      }
+
+      .sidebar-link.active {
+         background: var(--sidebar-active-bg);
+         color: var(--sidebar-active-text);
+         font-weight: 600;
+      }
+
+      .sidebar-link .chevron {
+         margin-left: auto;
+         font-size: 0.75rem;
+         transition: transform 0.2s ease;
+      }
+
+      .sidebar-link[aria-expanded="true"] .chevron {
+         transform: rotate(90deg);
+      }
+
+      .sidebar-submenu {
+         list-style: none;
+         padding-left: 1.6rem;
+         margin: 0 0 0.25rem;
+      }
+
+      .sidebar-submenu .sidebar-link {
+         font-size: 0.93rem;
+         padding: 0.45rem 0.75rem;
+      }
+
+      .sidebar-user {
+         border-top: 1px solid var(--sidebar-border);
+         padding: 0.75rem;
+      }
+
+      .sidebar-user .name {
+         color: var(--accent);
+         font-weight: 700;
+         padding: 0 0.75rem 0.5rem;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         white-space: nowrap;
+      }
+
+      .sidebar-link.logout:hover {
+         background: #fef2f2;
+         color: #dc2626;
+      }
+
+      /* ---------- Main area ---------- */
+      .main-wrapper {
+         margin-left: var(--sidebar-width);
+         min-height: 100vh;
+         display: flex;
+         flex-direction: column;
+      }
+
+      .topbar {
+         position: sticky;
+         top: 0;
+         z-index: 1020;
+         background: #fff;
+         border-bottom: 1px solid var(--sidebar-border);
+         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+         padding: 0.75rem 1rem;
+      }
+
+      .main-content {
+         flex: 1;
+         padding-bottom: 1.5rem;
+      }
+
+      .sidebar-backdrop {
+         display: none;
+         position: fixed;
+         inset: 0;
+         background: rgba(0, 0, 0, 0.4);
+         z-index: 1035;
+      }
+
+      /* ---------- Dashboard ---------- */
+      .stat-card {
+         border: 0;
+         border-radius: 10px;
+      }
+
+      .stat-icon {
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         width: 42px;
+         height: 42px;
+         border-radius: 10px;
+         font-size: 1.1rem;
+         margin-bottom: 0.75rem;
+      }
+
+      .stat-label {
+         color: #6b7280;
+         font-size: 0.9rem;
+      }
+
+      .stat-value {
+         font-size: 2rem;
+         font-weight: 700;
+         line-height: 1.2;
+      }
+
+      .dept-chart-wrap {
+         position: relative;
+         width: 100%;
+         min-height: 320px;
+      }
+
+      /* ---------- Phones ---------- */
+      @media (max-width: 767.98px) {
+
+         /* tighter page cards so content isn't squeezed by padding */
+         .main-content .p-4 {
+            padding: 1rem !important;
+         }
+
+         .main-content .container-fluid {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+         }
+
+         /* tables scroll sideways inside .table-responsive instead of crushing columns */
+         .main-content .table-responsive .table th,
+         .main-content .table-responsive .table td {
+            white-space: nowrap;
+         }
+
+         .main-content .table .btn {
+            padding: 0.25rem 0.5rem;
+         }
+
+         .stat-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+         }
+
+         .stat-value {
+            font-size: 1.5rem;
+         }
+
+         .topbar .fs-5 {
+            font-size: 1.05rem !important;
+         }
+
+         footer p {
+            font-size: 0.8rem;
+         }
+      }
+
+      /* ---------- Tablet / mobile: sidebar becomes a slide-in drawer ---------- */
+      @media (max-width: 991.98px) {
+         .sidebar {
+            transform: translateX(-100%);
+         }
+
+         .main-wrapper {
+            margin-left: 0;
+         }
+
+         body.sidebar-open .sidebar {
+            transform: translateX(0);
+         }
+
+         body.sidebar-open .sidebar-backdrop {
+            display: block;
+         }
+      }
+   </style>
 </head>
 
-<body ng-app="myApp" style="padding-bottom: 100px; background-color: #edf5f5">
+<body ng-app="myApp">
    <!-- bootsrap icon -->
    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
       <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
@@ -82,110 +339,103 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != true) {
    </svg>
    <!-- bootsrap icon -->
 
-   <div>
 
-      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm py-3">
-         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-               <img src="../img/final_tcea.jpg" alt="logo" class="img-fluid" style="max-height: 100px" />
-            </a>
+   <!-- ================= SIDEBAR ================= -->
+   <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+         <a href="#!"><img src="../img/final_tcea.jpg" alt="logo" class="img-fluid" /></a>
+      </div>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-               data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-               aria-label="Toggle navigation">
-               <span class="navbar-toggler-icon"></span>
-            </button>
+      <nav class="sidebar-menu">
+         <ul class="list-unstyled mb-0">
+            <li>
+               <a class="sidebar-link" href="#!"><i class="icon fa-solid fa-house"></i> Home</a>
+            </li>
+            <li>
+               <a class="sidebar-link" href="#!/student"><i class="icon fa-solid fa-school"></i> Student Details</a>
+            </li>
 
-            <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+            <li class="sidebar-heading">Management</li>
 
-               <!-- YOUR ORIGINAL CENTER MENU -->
-               <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fs-5">
-                  <li class="nav-item">
-                     <a class="nav-link active" aria-current="page" href="#!"><i class="fa-solid fa-house"></i> Home</a>
+            <li>
+               <button class="sidebar-link" type="button" data-bs-toggle="collapse" data-bs-target="#menuMaster"
+                  aria-expanded="false" aria-controls="menuMaster">
+                  <i class="icon fa-solid fa-gear"></i> Master Entry
+                  <i class="chevron fa-solid fa-chevron-right"></i>
+               </button>
+               <ul class="sidebar-submenu collapse" id="menuMaster">
+                  <li>
+                     <a class="sidebar-link" href="#!/dept"><i class="icon fa-solid fa-building"></i> Department Details</a>
                   </li>
-                  <li class="nav-item">
-                     <a class="nav-link" href="#!/student"><i class="fa-solid fa-school"></i> Student Details</a>
+                  <li>
+                     <a class="sidebar-link" href="#!/subjects"><i class="icon fa-solid fa-book"></i> Subjects</a>
                   </li>
-                  <li class="nav-item dropdown">
-                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-gear"></i>
-                        Master Entry
-                     </a>
-                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown1">
-                        <li>
-                           <a class="dropdown-item" href="#!/dept"><i class="fa-solid fa-building"></i> Department
-                              Details</a>
-                        </li>
-                        <li>
-                           <hr class="dropdown-divider" />
-                        </li>
-                        <li>
-                           <a class="dropdown-item" href="#!/subjects"><i class="fa-solid fa-book"></i> Subjects</a>
-                        </li>
-                     </ul>
-                  </li>
-
-                  <li class="nav-item dropdown">
-                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa-solid fa-users"></i> Teacher Section
-                     </a>
-                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
-                        <li>
-                           <a class="dropdown-item" href="#!/teacher"><i class="fa-solid fa-user"></i> Add Teacher</a>
-                        </li>
-                     </ul>
-                  </li>
-                  <li class="nav-item dropdown">
-                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa-solid fa-address-book"></i> User Section
-                     </a>
-                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
-                        <li>
-                           <a class="dropdown-item" href="#!/user_section"><i class="fa-solid fa-user"></i> Create User</a>
-                        </li> <hr>
-                        <li>
-                           <a class="dropdown-item" href="#!/active_user"><i class="fa-solid fa-blog"></i> Active User</a>
-                        </li>                     
-                     </ul>
-                     
-                  </li>
-                  <!-- <li class="nav-item">
-                     <a class="nav-link" href="#!/user_section"><i class="fa-solid fa-address-book"></i> Create User</a>
-                  </li> -->
-                  <li class="nav-item">
-                     <a class="nav-link" href="#!/change_pass"><i class="fa-solid fa-key"></i> Change Password!</a>
-                  </li>
-
                </ul>
+            </li>
 
-               <!-- ⭐ USER NAME ON RIGHT SIDE ⭐ -->
-               <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fs-5">
-                  <li class="nav-item dropdown">
-                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false" style="color: #818CF8;">
-                        <i class="fa-solid fa-user"></i> <b><?php echo "Welcome Back " . ucwords($_SESSION['name']); ?>
-                        </b></a>
-                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
-                        <li>
-                           <a class="dropdown-item" href="../logout.php"><i
-                                 class="fa-solid fa-arrow-right-from-bracket"></i> Log
-                              Out</a>
-                        </li> 
-                     </ul>
+            <li>
+               <button class="sidebar-link" type="button" data-bs-toggle="collapse" data-bs-target="#menuTeacher"
+                  aria-expanded="false" aria-controls="menuTeacher">
+                  <i class="icon fa-solid fa-users"></i> Teacher Section
+                  <i class="chevron fa-solid fa-chevron-right"></i>
+               </button>
+               <ul class="sidebar-submenu collapse" id="menuTeacher">
+                  <li>
+                     <a class="sidebar-link" href="#!/teacher"><i class="icon fa-solid fa-user"></i> Add Teacher</a>
                   </li>
-
                </ul>
+            </li>
 
-            </div>
-         </div>
+            <li>
+               <button class="sidebar-link" type="button" data-bs-toggle="collapse" data-bs-target="#menuUser"
+                  aria-expanded="false" aria-controls="menuUser">
+                  <i class="icon fa-solid fa-address-book"></i> User Section
+                  <i class="chevron fa-solid fa-chevron-right"></i>
+               </button>
+               <ul class="sidebar-submenu collapse" id="menuUser">
+                  <li>
+                     <a class="sidebar-link" href="#!/user_section"><i class="icon fa-solid fa-user"></i> Create User</a>
+                  </li>
+                  <li>
+                     <a class="sidebar-link" href="#!/active_user"><i class="icon fa-solid fa-blog"></i> Active User</a>
+                  </li>
+               </ul>
+            </li>
+
+            <li class="sidebar-heading">Account</li>
+
+            <li>
+               <a class="sidebar-link" href="#!/change_pass"><i class="icon fa-solid fa-key"></i> Change Password</a>
+            </li>
+         </ul>
       </nav>
 
+      <!-- ⭐ USER NAME + LOGOUT AT THE BOTTOM ⭐ -->
+      <div class="sidebar-user">
+         <div class="name"><i class="fa-solid fa-circle-user"></i> <?php echo htmlspecialchars(ucwords($_SESSION['name'])); ?></div>
+         <a class="sidebar-link logout" href="../logout.php"><i class="icon fa-solid fa-arrow-right-from-bracket"></i> Log Out</a>
+      </div>
+   </aside>
+   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-      <div ng-view></div>
+   <!-- ================= MAIN ================= -->
+   <div class="main-wrapper">
+      <header class="topbar d-flex align-items-center">
+         <button class="btn btn-light border d-lg-none me-3" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
+            <i class="fa-solid fa-bars"></i>
+         </button>
+         <span class="fw-semibold fs-5" id="pageTitle">Home</span>
+         <span class="ms-auto d-none d-sm-inline" style="color: var(--accent);">
+            <i class="fa-solid fa-user"></i>
+            <b><?php echo "Welcome Back " . htmlspecialchars(ucwords($_SESSION['name'])); ?></b>
+         </span>
+      </header>
 
-      <footer class="bg-light text-dark text-center shadow-sm py-3 fixed-bottom">
+      <main class="main-content">
+         <div ng-view></div>
+      </main>
+
+      <footer class="bg-light text-dark text-center shadow-sm py-3">
          <p class="mb-0">
             <i class="fa-solid fa-copyright"></i> 2025 Developed By
             <a href="https://www.linkedin.com/in/sanishil" class="text-dark text-decoration-none" target="_blank">
@@ -199,16 +449,59 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != true) {
          </p> 
           
       </footer>
-      <script src="controller/main.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-         crossorigin="anonymous"></script>
-      <!-- Option 2: Separate Popper and Bootstrap JS -->
-      <!--
-         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-         -->
    </div>
+
+   <script src="controller/main.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"></script>
+   <script>
+      // Sidebar: drawer toggle on small screens + highlight the current route
+      (function () {
+         var body = document.body;
+         var links = document.querySelectorAll(".sidebar-menu a.sidebar-link");
+         var pageTitle = document.getElementById("pageTitle");
+
+         function closeSidebar() {
+            body.classList.remove("sidebar-open");
+         }
+
+         document.getElementById("sidebarToggle").addEventListener("click", function () {
+            body.classList.toggle("sidebar-open");
+         });
+         document.getElementById("sidebarBackdrop").addEventListener("click", closeSidebar);
+
+         // Keep each group's chevron in sync with its collapse state
+         document.querySelectorAll(".sidebar-submenu").forEach(function (submenu) {
+            var toggle = document.querySelector('[data-bs-target="#' + submenu.id + '"]');
+            submenu.addEventListener("show.bs.collapse", function () { toggle.setAttribute("aria-expanded", "true"); });
+            submenu.addEventListener("hide.bs.collapse", function () { toggle.setAttribute("aria-expanded", "false"); });
+         });
+
+         function setActive() {
+            var hash = location.hash || "#!";
+            if (hash === "#!/" || hash === "#!/dash") hash = "#!";
+
+            links.forEach(function (link) {
+               var isActive = link.getAttribute("href") === hash;
+               link.classList.toggle("active", isActive);
+               if (!isActive) return;
+
+               pageTitle.textContent = link.textContent.trim();
+
+               // Open the group that contains the active page
+               var submenu = link.closest(".sidebar-submenu");
+               if (submenu && !submenu.classList.contains("show")) {
+                  new bootstrap.Collapse(submenu, { toggle: true });
+               }
+            });
+            closeSidebar();
+         }
+
+         window.addEventListener("hashchange", setActive);
+         setActive();
+      })();
+   </script>
 </body>
 
 </html>

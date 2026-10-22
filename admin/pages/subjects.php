@@ -24,7 +24,7 @@ include "../api/connect.php";
                 </div>
 
                 <div class="card-body">
-                    <table class="table table-borderless">
+                    <div class="table-responsive"><table class="table table-borderless">
                         <thead class="table-light border-dark">
                             <tr class="text-center">
                                 <th style="width: 10%;">#</th>
@@ -49,7 +49,7 @@ include "../api/connect.php";
                                     <button class="btn btn-danger" ng-click="subject_delete(x.id);"><i class="fa-solid fa-trash"></i></button>
                                 </td>
                             </tr>
-                    </table>
+                    </table></div>
                     <div class="row">
                         <div class="col-lg-4"></div>
                         <div class="col-lg-4 text-center text-danger" ng-if="teacher_data.length === 0">

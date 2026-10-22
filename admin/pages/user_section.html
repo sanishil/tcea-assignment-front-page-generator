@@ -21,7 +21,7 @@
         </div>
 
         <div class="card-body">
-          <table class="table">
+          <div class="table-responsive"><table class="table">
             <thead class="table-light text-center border-dark">
               <tr>
                 <th style="width: 5%;">#</th>
@@ -44,7 +44,7 @@
                       ng-click="user_delete(x.id);"></i></button>
                 </td>
               </tr>
-          </table>
+          </table></div>
           <div class="row">
             <div class="col-lg-4"></div>
             <div class="col-lg-4 text-center text-danger" ng-if="user_data.length === 0">

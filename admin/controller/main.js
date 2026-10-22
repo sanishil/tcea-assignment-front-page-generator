@@ -42,7 +42,9 @@ app.config(function ($routeProvider) {
     });
 });
 
-app.controller("dashCtrl", function ($scope, $http) {
+var deptChartInstance = null;
+
+app.controller("dashCtrl", function ($scope, $http, $timeout) {
   // "dashboard"
   $scope.std_view = function () {
     $http({
@@ -66,6 +68,98 @@ app.controller("dashCtrl", function ($scope, $http) {
       }
     );
   };
+
+  // Dashboard chart: students / teachers / subjects per department
+  $scope.dashView = "chart";
+  $scope.dept_chart = function () {
+    $http({
+      url: "api/dash/dept_summary.php",
+      method: "POST",
+      data: {
+        op: "view",
+      },
+    }).then(
+      function (response) {
+        if (response.data.status === "success") {
+          $scope.dept_summary = response.data.data;
+          // ~56px per department so the three bars never get squashed
+          $scope.deptChartHeight = $scope.dept_summary.length * 56 + 70 + "px";
+          // wait for the height to be applied before drawing
+          $timeout(function () {
+            drawDeptChart($scope.dept_summary);
+          });
+        } else {
+          $scope.dept_summary = [];
+          $scope.deptChartError = response.data.message;
+        }
+      },
+      function () {
+        $scope.deptChartError = "Could not load chart data";
+      }
+    );
+  };
+
+  function drawDeptChart(rows) {
+    var canvas = document.getElementById("deptChart");
+    if (!canvas || typeof Chart === "undefined") return;
+    if (deptChartInstance) deptChartInstance.destroy();
+
+    var muted = "#52514e";
+    deptChartInstance = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: rows.map(function (r) { return r.dept_name; }),
+        datasets: [
+          { label: "Students", data: rows.map(function (r) { return r.students; }), backgroundColor: "#2a78d6" },
+          { label: "Teachers", data: rows.map(function (r) { return r.teachers; }), backgroundColor: "#eb6834" },
+          { label: "Subjects", data: rows.map(function (r) { return r.subjects; }), backgroundColor: "#1baf7a" },
+        ],
+      },
+      options: {
+        indexAxis: "y", // horizontal bars keep long department names readable on phones
+        responsive: true,
+        maintainAspectRatio: false,
+        datasets: {
+          bar: {
+            borderRadius: 4,
+            borderSkipped: "start",
+            barPercentage: 0.85,
+            categoryPercentage: 0.8,
+          },
+        },
+        interaction: { mode: "index", axis: "y", intersect: false },
+        plugins: {
+          legend: {
+            position: "top",
+            align: "start",
+            labels: { color: muted, usePointStyle: true, pointStyle: "rectRounded", boxWidth: 10 },
+          },
+          tooltip: { padding: 10 },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { color: muted, precision: 0 },
+            grid: { color: "#eef0f2" },
+            border: { display: false },
+          },
+          y: {
+            grid: { display: false },
+            ticks: {
+              color: muted,
+              autoSkip: false,
+              // shorten names on small screens; the tooltip still shows the full name
+              callback: function (value) {
+                var label = this.getLabelForValue(value);
+                var max = window.innerWidth < 576 ? 16 : 32;
+                return label.length > max ? label.slice(0, max - 1) + "…" : label;
+              },
+            },
+          },
+        },
+      },
+    });
+  }
   // ****************** Department Section Start ******************
   $scope.dept_entry = function () {
     $http({
