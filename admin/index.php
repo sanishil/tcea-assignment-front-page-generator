@@ -1,13 +1,4 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != true) {
-   session_unset();
-   session_destroy();
-   header("location:../login.html");
-   mysqli_close($con);
-   exit;
-}
-?>
+<?php include '../session_check.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -502,6 +493,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != true) {
          setActive();
       })();
    </script>
+<script src="../assets/js/idle_logout.js"></script>
 </body>
 
 </html>

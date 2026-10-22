@@ -18,7 +18,7 @@ include "../api/connect.php";
                 </div>
                 <div class="row pt-2">
                     <div class="col-md-4 offset-md-8">
-                        <input class="form-control" type="search" ng-model="search" placeholder="Search"
+                        <input class="form-control" type="search" ng-model="search" ng-change="pager.page = 1" placeholder="Search"
                             aria-label="Search">
                     </div>
                 </div>
@@ -37,8 +37,8 @@ include "../api/connect.php";
                             </tr>
                         </thead>
                         <tbody class="text-center">
-                            <tr ng-repeat="x in subject_data | filter:search">
-                                <th >{{$index+1}}</th>
+                            <tr ng-repeat="x in (rows = (subject_data | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
+                                <th >{{(pager.page-1)*pager.size + $index+1}}</th>
                                 <td>{{x.subjects}}</td>
                                 <td>{{x.code}}</td>
                                 <td>{{x.sem}}</td>
@@ -50,6 +50,7 @@ include "../api/connect.php";
                                 </td>
                             </tr>
                     </table></div>
+                    <table-pager total="rows.length" pager="pager"></table-pager>
                     <div class="row">
                         <div class="col-lg-4"></div>
                         <div class="col-lg-4 text-center text-danger" ng-if="teacher_data.length === 0">

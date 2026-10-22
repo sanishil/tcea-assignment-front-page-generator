@@ -1,13 +1,4 @@
-<?php 
-session_start();
-if(!isset($_SESSION['user_id']) || $_SESSION['user_id']!=true){
-   session_unset();
-   session_destroy();
-   header("location:../login.html");
-   mysqli_close($con);
-   exit;
-}
-?>
+<?php include '../session_check.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -191,6 +182,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['user_id']!=true){
          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
          -->
    </div>
+<script src="../assets/js/idle_logout.js"></script>
 </body>
 
 </html>

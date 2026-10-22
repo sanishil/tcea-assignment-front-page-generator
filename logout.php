@@ -7,6 +7,6 @@ $res2 = mysqli_query($con, $sql_token) or die(mysqli_error($con));
 session_unset();
 session_destroy();
 
-header("Location: login.html");
+header("Location: login.html" . (isset($_GET['timeout']) ? "?timeout=1" : ""));
 exit;
 ?>

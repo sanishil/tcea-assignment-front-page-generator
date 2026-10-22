@@ -27,7 +27,7 @@ if (isset($data1['op']) && $data1['op'] == "view") {
     }
 }
 else if (isset($data1['op']) && $data1['op'] == "view2") {
-    $query2 = "SELECT * FROM login where token=1";
+    $query2 = "SELECT * FROM login where token=1 and last_activity >= NOW() - INTERVAL 10 MINUTE";
     $result2 = mysqli_query($con, $query2); // Changed $conn to $con
     
     $data2 = array();

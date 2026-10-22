@@ -117,7 +117,7 @@ $con->close();
                         </tr>
                      </thead>
                      <tbody>
-                        <tr ng-repeat="x in dept_summary">
+                        <tr ng-repeat="x in dept_summary | limitTo:pager.size:(pager.page-1)*pager.size">
                            <td>{{ x.dept_name }}</td>
                            <td class="text-end">{{ x.students }}</td>
                            <td class="text-end">{{ x.teachers }}</td>
@@ -125,6 +125,7 @@ $con->close();
                         </tr>
                      </tbody>
                   </table>
+                  <table-pager total="dept_summary.length" pager="pager"></table-pager>
                </div>
             </div>
          </div>

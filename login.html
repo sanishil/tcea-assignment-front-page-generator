@@ -91,6 +91,12 @@
 
   <!-- JS CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    if (new URLSearchParams(location.search).has('timeout')) {
+      alert('Your session expired after 10 minutes of inactivity. Please login again.');
+      history.replaceState(null, '', 'login.html');
+    }
+  </script>
 </body>
 
 </html>

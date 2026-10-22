@@ -45,6 +45,9 @@ app.config(function ($routeProvider) {
 var deptChartInstance = null;
 
 app.controller("dashCtrl", function ($scope, $http, $timeout) {
+  // pagination state for the table on the current page (see tablePager below)
+  $scope.pager = { page: 1, size: 10 };
+
   // "dashboard"
   $scope.std_view = function () {
     $http({
@@ -819,5 +822,68 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
         }
       );
     }
+  };
+});
+
+// Pagination bar for tables. Usage:
+//   <tr ng-repeat="x in (rows = (data | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
+//   <table-pager total="rows.length" pager="pager"></table-pager>
+app.directive("tablePager", function () {
+  return {
+    restrict: "E",
+    scope: { total: "<", pager: "=" },
+    template:
+      '<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-2" ng-if="total > 0">' +
+      '  <div class="d-flex align-items-center gap-2 small text-muted">' +
+      '    <span>Show</span>' +
+      '    <select class="form-select form-select-sm w-auto" ng-model="pager.size" ng-options="s.value as s.label for s in sizes" ng-change="pager.page = 1"></select>' +
+      '    <span>{{ from() }}–{{ to() }} of {{ total }}</span>' +
+      '  </div>' +
+      '  <ul class="pagination pagination-sm mb-0">' +
+      '    <li class="page-item" ng-class="{ disabled: pager.page == 1 }"><a class="page-link" href="" ng-click="go(pager.page - 1)">&laquo;</a></li>' +
+      '    <li class="page-item" ng-repeat="p in pageList() track by $index" ng-class="{ active: p == pager.page, disabled: p == gap }">' +
+      '      <a class="page-link" href="" ng-click="go(p)">{{ p }}</a></li>' +
+      '    <li class="page-item" ng-class="{ disabled: pager.page == pages() }"><a class="page-link" href="" ng-click="go(pager.page + 1)">&raquo;</a></li>' +
+      '  </ul>' +
+      '</div>',
+    link: function (scope) {
+      // "All" is a very large page size, so every row fits on page 1
+      scope.sizes = [
+        { value: 10, label: "10" },
+        { value: 25, label: "25" },
+        { value: 50, label: "50" },
+        { value: 100, label: "100" },
+        { value: Number.MAX_SAFE_INTEGER, label: "All" },
+      ];
+      scope.gap = "…";
+
+      scope.pages = function () {
+        return Math.max(1, Math.ceil((scope.total || 0) / scope.pager.size));
+      };
+      scope.from = function () {
+        return (scope.pager.page - 1) * scope.pager.size + 1;
+      };
+      scope.to = function () {
+        return Math.min(scope.pager.page * scope.pager.size, scope.total);
+      };
+      scope.go = function (p) {
+        if (typeof p === "number" && p >= 1 && p <= scope.pages()) scope.pager.page = p;
+      };
+
+      // 1 … 4 5 6 … 20
+      scope.pageList = function () {
+        var n = scope.pages(), cur = scope.pager.page, list = [];
+        for (var i = 1; i <= n; i++) {
+          if (i == 1 || i == n || Math.abs(i - cur) <= 1) list.push(i);
+          else if (list[list.length - 1] !== scope.gap) list.push(scope.gap);
+        }
+        return list;
+      };
+
+      // stay on a valid page when rows are deleted or the search shrinks the list
+      scope.$watchGroup(["total", "pager.size"], function () {
+        if (scope.pager.page > scope.pages()) scope.pager.page = scope.pages();
+      });
+    },
   };
 });
