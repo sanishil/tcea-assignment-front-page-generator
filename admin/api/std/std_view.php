@@ -12,7 +12,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 if (isset($data1['op']) && $data1['op'] == "view") {
-    $query = "SELECT id,std_id,tu_roll,name,sem,std_dept,course,subjects,dou FROM student;";
+    $query = "SELECT id,std_id,tu_roll,name,sem,std_dept,course,subjects,dou FROM student ORDER BY sem ASC,std_dept ASC, tu_roll ASC;";
     $result = mysqli_query($con, $query);
     
     $data = array();

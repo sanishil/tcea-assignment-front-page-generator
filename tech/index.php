@@ -87,7 +87,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['user_id']!=true){
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm py-3">
          <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="#">
-               <img src="../img/tcea_logo.jpg" alt="logo" class="img-fluid" style="max-height: 100px" />
+               <img src="../img/final_tcea.jpg" alt="logo" class="img-fluid" style="max-height: 100px" />
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -168,25 +168,17 @@ if(!isset($_SESSION['user_id']) || $_SESSION['user_id']!=true){
       <div ng-view></div>
 
       <footer class="bg-light text-dark text-center shadow-sm py-3 fixed-bottom">
-         <!-- <p class="mb-0">
-            <i class="fa-solid fa-copyright"></i> 2025
-            <a href="https://www.linkedin.com/in/sani-shil" class="text-dark text-decoration-none" target="_blank">
-               Mr. Sani Shil
-            </a>
-
-            Fueled by coffee & code. Found a bug?
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSf90Wk3_laRB6Y_gRGbvoTj1HRs7Eqe_LpAAskAI78iP6zCnw/viewform?usp=dialog"
-               class="text-info text-decoration-none" target="_blank">Squash it here.</a>
-         </p> -->
          <p class="mb-0">
-            <i class="fa-solid fa-copyright"></i> 2025
-            <a href="" class="text-dark text-decoration-none" >
-                Sani Shil, Rupak Das, Ranabir Das, Tanmoy Sarkar, Bikram Debnath,
-            </a>
+            <i class="fa-solid fa-copyright"></i> 2025 Developed By
+            <a href="https://www.linkedin.com/in/sanishil" class="text-dark text-decoration-none" target="_blank">
+               Mr. Sani Shil
+            </a> | Activity Reviewed by
+        <a href="https://www.instagram.com/paulsagar28?igsh=MW9va3k4Z2M1OGl2bw=="
+          class="text-dark fw-semibold text-decoration-none" target="_blank">
+          Mr. Sagar Rudra Paul
+        </a>
+          
 
-            Fueled by coffee & code. Found a bug?
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSf90Wk3_laRB6Y_gRGbvoTj1HRs7Eqe_LpAAskAI78iP6zCnw/viewform?usp=dialog"
-               class="text-info text-decoration-none" target="_blank">Squash it here.</a>
          </p>
       </footer>
       <script src="controller/main.js"></script>
