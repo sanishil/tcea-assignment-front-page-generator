@@ -1,0 +1,402 @@
+/* Public cover-page form (form/form.php), loaded on top of modern.css.
+   Everything is scoped to .ec-* classes so the hidden print template (#contentToPrint) renders as before. */
+
+:root {
+   --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+   --brand: #347ec4;
+   --input-h: 48px;
+}
+
+body {
+   background: var(--bg);
+}
+
+.ec-page {
+   padding-bottom: 2.5rem;
+}
+
+/* ================= Campus banner ================= */
+.ec-hero {
+   position: relative;
+   height: 260px;
+   overflow: hidden;
+   background: #c9d6e3;
+}
+
+.ec-hero-photo {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   object-position: center 70%;
+}
+
+.ec-hero::after {
+   content: "";
+   position: absolute;
+   inset: 0;
+   background: linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%);
+}
+
+.ec-hero-inner {
+   position: relative;
+   z-index: 1;
+   display: flex;
+   align-items: flex-start;
+   justify-content: space-between;
+   gap: 1rem;
+   max-width: 980px;
+   margin: 0 auto;
+   padding: 1.75rem 1.25rem 0;
+   color: #fff;
+}
+
+.ec-brand {
+   display: flex;
+   align-items: center;
+   gap: 0.9rem;
+   min-width: 0;
+}
+
+.ec-brand img {
+   flex: 0 0 auto;
+   width: 60px;
+   height: 60px;
+   border-radius: 50%;
+   background: #fff;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.ec-brand-name {
+   font-size: 1.15rem;
+   font-weight: 800;
+   letter-spacing: 0.02em;
+   line-height: 1.25;
+}
+
+.ec-brand-addr {
+   font-size: 0.875rem;
+   opacity: 0.85;
+}
+
+.ec-format-btn {
+   flex: 0 0 auto;
+   display: inline-flex;
+   align-items: center;
+   gap: 0.5rem;
+   padding: 0.55rem 0.95rem;
+   border: 1px solid rgba(255, 255, 255, 0.45);
+   border-radius: var(--radius-sm);
+   background: rgba(255, 255, 255, 0.12);
+   backdrop-filter: blur(6px);
+   -webkit-backdrop-filter: blur(6px);
+   color: #fff;
+   font-size: 0.9rem;
+   font-weight: 600;
+   text-decoration: none;
+   transition: background-color 0.15s ease;
+}
+
+.ec-format-btn:hover,
+.ec-format-btn:focus {
+   background: rgba(255, 255, 255, 0.25);
+   color: #fff;
+}
+
+/* ================= Form card ================= */
+.ec-shell {
+   position: relative;
+   z-index: 2;
+   max-width: 980px;
+   margin: -110px auto 0;
+   padding: 0 1.25rem;
+}
+
+.ec-card {
+   background: var(--surface);
+   border: 1px solid var(--border);
+   border-radius: 20px;
+   box-shadow: var(--shadow-lg);
+   padding: 2rem 2.25rem 1.75rem;
+}
+
+.ec-card-head {
+   margin-bottom: 1.75rem;
+}
+
+.ec-card-head h1 {
+   margin: 0 0 0.35rem;
+   font-size: 1.6rem;
+   font-weight: 700;
+   letter-spacing: -0.02em;
+}
+
+.ec-card-head p {
+   margin: 0;
+   color: var(--text-muted);
+}
+
+/* numbered section headings */
+.ec-section + .ec-section {
+   margin-top: 1.5rem;
+   padding-top: 1.5rem;
+   border-top: 1px solid var(--border-soft);
+}
+
+.ec-section-title {
+   display: flex;
+   align-items: center;
+   gap: 0.7rem;
+   margin: 0 0 1.1rem;
+   font-size: 1.05rem;
+   font-weight: 700;
+}
+
+.ec-step {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 30px;
+   height: 30px;
+   border-radius: 9px;
+   background: var(--primary-soft);
+   color: var(--primary);
+   font-size: 0.85rem;
+   font-weight: 700;
+}
+
+.ec-section-title small {
+   margin-left: auto;
+   color: var(--text-muted);
+   font-size: 0.8rem;
+   font-weight: 500;
+}
+
+/* ================= Fields ================= */
+.ec-field label {
+   display: block;
+   margin-bottom: 0.4rem;
+   font-size: 0.875rem;
+   font-weight: 600;
+   color: #374151;
+}
+
+.ec-field label .fa-solid,
+.ec-field label .fa-brands {
+   width: 1rem;
+   margin-right: 0.2rem;
+   color: #9ca3af;
+}
+
+.ec-field .req {
+   color: var(--danger);
+   margin-left: 0.1rem;
+}
+
+.ec-field .opt {
+   margin-left: 0.25rem;
+   color: var(--text-muted);
+   font-weight: 400;
+}
+
+.ec-field .form-control,
+.ec-field .form-select {
+   height: var(--input-h);
+   border-radius: 12px;
+   font-size: 1rem;
+}
+
+.ec-field .form-control::placeholder {
+   color: #9ca3af;
+   text-transform: none;
+}
+
+/* auto-filled fields read as values, not inputs */
+.ec-field .form-control[readonly] {
+   background: #f8fafc;
+   color: var(--text);
+   cursor: default;
+}
+
+.ec-field .form-control[readonly]:focus {
+   border-color: #dfe3ea;
+   box-shadow: none;
+}
+
+.ec-hint {
+   margin-top: 0.35rem;
+   font-size: 0.8rem;
+   color: var(--text-muted);
+}
+
+/* second faculty row for lab submissions */
+.ec-extra {
+   margin-top: 0.25rem;
+   padding: 1rem 1rem 0;
+   border: 1px dashed #c7d2fe;
+   border-radius: 14px;
+   background: #fafaff;
+}
+
+.ec-extra-label {
+   display: flex;
+   align-items: center;
+   gap: 0.45rem;
+   margin-bottom: 0.75rem;
+   font-size: 0.8rem;
+   font-weight: 600;
+   color: var(--primary);
+}
+
+/* ================= Actions ================= */
+.ec-actions {
+   display: flex;
+   align-items: center;
+   gap: 0.75rem;
+   margin-top: 1.75rem;
+   padding-top: 1.5rem;
+   border-top: 1px solid var(--border-soft);
+}
+
+.ec-actions .ec-note {
+   margin-right: auto;
+   font-size: 0.85rem;
+   color: var(--text-muted);
+}
+
+.ec-btn {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   gap: 0.55rem;
+   height: var(--input-h);
+   padding: 0 1.4rem;
+   border-radius: 12px;
+   font-size: 1rem;
+   font-weight: 600;
+   white-space: nowrap;
+}
+
+.ec-btn-primary {
+   border: 0;
+   background: var(--primary);
+   color: #fff;
+   box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+}
+
+.ec-btn-primary:hover,
+.ec-btn-primary:focus {
+   background: var(--primary-hover);
+   color: #fff;
+}
+
+.ec-btn-primary:active {
+   transform: translateY(1px);
+}
+
+.ec-btn-ghost {
+   border: 1px solid var(--border);
+   background: var(--surface);
+   color: #374151;
+}
+
+.ec-btn-ghost:hover,
+.ec-btn-ghost:focus {
+   border-color: #fecaca;
+   background: #fef2f2;
+   color: var(--danger-hover);
+}
+
+/* ================= Footer ================= */
+.ec-footer {
+   margin-top: 1.75rem;
+   text-align: center;
+   font-size: 0.8rem;
+   line-height: 1.7;
+   color: var(--text-muted);
+}
+
+.ec-footer a {
+   color: var(--text);
+   font-weight: 600;
+   text-decoration: none;
+   cursor: pointer;
+}
+
+.ec-footer a:hover {
+   color: var(--primary);
+}
+
+/* ================= Tablet / phone ================= */
+@media (max-width: 767.98px) {
+   .ec-hero {
+      height: 230px;
+   }
+
+   .ec-hero-inner {
+      padding: 1.25rem 1rem 0;
+   }
+
+   .ec-brand img {
+      width: 48px;
+      height: 48px;
+   }
+
+   .ec-brand-name {
+      font-size: 0.95rem;
+   }
+
+   .ec-brand-addr {
+      font-size: 0.78rem;
+   }
+
+   /* icon-only download button so the college name keeps its room */
+   .ec-format-btn {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      justify-content: center;
+   }
+
+   .ec-format-btn span {
+      display: none;
+   }
+
+   .ec-shell {
+      margin-top: -90px;
+      padding: 0 1rem;
+   }
+
+   .ec-card {
+      padding: 1.5rem 1.15rem 1.25rem;
+   }
+
+   .ec-card-head h1 {
+      font-size: 1.35rem;
+   }
+
+   .ec-section-title small {
+      display: none;
+   }
+
+   .ec-actions {
+      flex-direction: column-reverse;
+      align-items: stretch;
+   }
+
+   .ec-actions .ec-note {
+      margin: 0;
+      text-align: center;
+   }
+
+   .ec-btn {
+      width: 100%;
+   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+   .ec-btn-primary:active {
+      transform: none;
+   }
+}

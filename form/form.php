@@ -1,128 +1,97 @@
 <?php
 include "../tech/api/connect.php";
+
+// department names are used by both the student and the faculty dropdowns
+$depts = [];
+$result = $con->query("SELECT dept_name FROM dept");
+while ($row = $result->fetch_assoc()) {
+    $depts[] = $row['dept_name'];
+}
 ?>
-<div class="container" style="padding-top: 20px;">
+<div class="ec-page">
 
-    <div class=" text-center">
-        <!-- <div class="spinner-grow text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-secondary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-success" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-danger" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-warning" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-info" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-light" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div> 
-        <div class="spinner-grow text-dark" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div> -->
-        <div class="card-body shadow-lg p-4 rounded">
-
-            <div class="d-flex align-items-start">
-                <!-- Logo/Image -->
-                <img src="img/final_tcea.jpg" alt="College Logo" class="me-3"
-                    style="width: 60px; height: 60px;">
-
-                <!-- Text Section -->
-                <div class="d-flex align-items-start justify-content-between" style="width: 100%;">
-                    <div class="d-flex flex-column">
-                        <span class="fw-bold fs-5" style="color:#347ec4;">
-                            <b>TECHNO COLLEGE OF ENGINEERING AGARTALA</b>
-                        </span>
-                        <span class="fw-bold fs-12">Maheshkhola, Agartala, West Tripura,799004</span>
-                        <span class="text-muted fs-6 text-start">EduCover Page...</span>
-                    </div>
-                    <a href="assets/TCEA_Format_Paper.pdf" target="_blank" class="btn btn-primary btn-sm align-self-start">
-                        <i class="fa-solid fa-download"></i>
-                    </a>
+    <!-- ================= Campus banner ================= -->
+    <header class="ec-hero">
+        <picture>
+            <source srcset="img/campus.webp" type="image/webp">
+            <img class="ec-hero-photo" src="img/campus.jpg" alt="" width="864" height="1080" decoding="async">
+        </picture>
+        <div class="ec-hero-inner">
+            <div class="ec-brand">
+                <img src="img/final_tcea.jpg" alt="TCEA logo" width="60" height="60">
+                <div>
+                    <div class="ec-brand-name">TECHNO COLLEGE OF ENGINEERING AGARTALA</div>
+                    <div class="ec-brand-addr">Maheshkhola, Agartala, West Tripura, 799004</div>
                 </div>
             </div>
+            <a href="assets/TCEA_Format_Paper.pdf" target="_blank" rel="noopener" class="ec-format-btn"
+                title="Download the format paper" aria-label="Download the format paper">
+                <i class="fa-solid fa-download"></i><span>Format paper</span>
+            </a>
+        </div>
+    </header>
 
-            <!-- <marquee behavior="scroll" direction="left" scrollamount="8"
-                style="background-color: #98a7abff; border-radius: 15px; ">
-                🚧 <b>This website is under development. If you find any bug,
-                    give your feedback at the bottom link <span
-                        style="color: #4896D9;"> "Squash it here" </span> </b> ✨
-            </marquee> -->
-            <div class="text-center"> <b style="font-size: 20px;">
-                    <i class="fa-solid fa-circle-info"></i> Fill in Your Details
-                    Here
-                </b></div>
+    <!-- ================= Form ================= -->
+    <div class="ec-shell">
+        <div class="ec-card">
 
-            <div style="text-align: left;"><b><i class="fa-solid fa-users"></i>
-                    Student
-                    Details </b>
-                <hr>
+            <div class="ec-card-head">
+                <h1>EduCover Page</h1>
+                <p>Fill in your details to download a ready-to-print assignment cover page.</p>
             </div>
-            <div class="row">
-                <div class="col-lg-6 mb-3">
-                    <div class="form-floating">
-                        <input class="form-control"
+
+            <!-- 1. Student -->
+            <section class="ec-section">
+                <h2 class="ec-section-title"><span class="ec-step">1</span> Student details
+                    <small><span class="req text-danger">*</span> required</small></h2>
+
+                <div class="row g-3">
+                    <div class="col-md-6 ec-field">
+                        <label for="ecStdId"><i class="fa-solid fa-id-card"></i> Student ID<span class="req">*</span></label>
+                        <input class="form-control" id="ecStdId" inputmode="numeric" autocomplete="off"
+                            placeholder="e.g. 2101234"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             ng-model="std_id" ng-blur="checkStudentID()">
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-users-gear"></i>
-                            Student ID </label>
+                        <div class="ec-hint">Used before? Your saved details fill in automatically.</div>
                     </div>
-                </div>
-                <div class="col-lg-6 mb-3">
-                    <div class="form-floating">
-                        <input class="form-control"
+                    <div class="col-md-6 ec-field">
+                        <label for="ecTuRoll"><i class="fa-solid fa-building-columns"></i> TU Roll No</label>
+                        <input class="form-control" id="ecTuRoll" inputmode="numeric" autocomplete="off"
+                            placeholder="Tripura University roll number"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             ng-model="tu_roll">
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-building-columns"></i>
-                            TU Roll No </label>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-2 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Floating label select example"
-                            ng-model="title">
-                            <option selected></option>
+
+                    <div class="col-4 col-md-3 ec-field">
+                        <label for="ecTitle">Title<span class="req">*</span></label>
+                        <select class="form-select" id="ecTitle" ng-model="title">
+                            <option value="">Select</option>
                             <option>Mr.</option>
                             <option>Miss.</option>
                             <option>Mrs.</option>
                             <option>Sri</option>
                             <option>Smt.</option>
                         </select>
-                        <label for="floatingTextarea">Honorific
-                            Title </label>
                     </div>
-                </div>
-                <div class="col-lg-6 mb-3">
-                    <div class="form-floating">
-                        <input class="form-control"
+                    <div class="col-8 col-md-9 ec-field">
+                        <label for="ecName"><i class="fa-solid fa-user"></i> Full name<span class="req">*</span></label>
+                        <input class="form-control" id="ecName" autocomplete="name" placeholder="As it should appear on the cover"
                             style="text-transform: capitalize;" ng-model="name">
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-user"></i>
-                            Name </label>
                     </div>
-                </div>
-                <div class="col-lg-4 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Floating label select example"
-                            ng-model="sem">
-                            <option selected></option>
+
+                    <div class="col-md-6 ec-field">
+                        <label for="ecStdDept"><i class="fa-solid fa-building"></i> Department<span class="req">*</span></label>
+                        <select class="form-select" id="ecStdDept" ng-model="std_dept" ng-change="sem && std_dept && course && subjects_view();">
+                            <option value="">Select department</option>
+                            <?php foreach ($depts as $dept) { ?>
+                            <option><?php echo htmlspecialchars($dept); ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3 ec-field">
+                        <label for="ecSem">Semester<span class="req">*</span></label>
+                        <select class="form-select" id="ecSem" ng-model="sem" ng-change="sem && std_dept && course && subjects_view();">
+                            <option value="">Select</option>
                             <option>1st</option>
                             <option>2nd</option>
                             <option>3rd</option>
@@ -132,253 +101,154 @@ include "../tech/api/connect.php";
                             <option>7th</option>
                             <option>8th</option>
                         </select>
-                        <label for="floatingTextarea">Semester </label>
                     </div>
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col-lg-6 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Select Department"
-                            ng-model="std_dept">
-                            <option selected></option>
-                            <?php
-                            $sql = "SELECT dept_name FROM dept";
-                            $result = $con->query($sql);
-                            while ($row = $result->fetch_assoc()) { ?>
-                            <option><?php echo $row['dept_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-building"></i>
-                            Department </label>
-                    </div>
-                </div>
-                <div class="col-lg-2 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Floating label select example"
-                            ng-model="course" ng-change="subjects_view();">
-                            <option selected></option>
-                            <option>B.Tech</option>
-                            <option>Diploma</option>
-                        </select>
-                        <label for="floatingTextarea">Course
-                            Code </label>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Floating label select example"
-                            ng-model="subjects"
-                            ng-change="subjects_code_view();">
-                            <option selected></option>
-                            <option
-                                ng-repeat="s in subjectss_data">{{s.subjects}}</option>
-                        </select>
-                        <label for="floatingTextarea"><i
-                                class="fa-brands fa-discourse"></i>
-                            Subject
-                            Title </label>
-                    </div>
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col-lg-3 mb-3">
-                    <div class="form-floating">
-                        <input class="form-control" ng-model="code" readonly>
-                        <label for="floatingTextarea">Subject
-                            Code </label>
-                    </div>
-                </div>
-                <div class="col-lg-3 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Floating label select example"
-                            ng-model="page_type">
-                            <option selected></option>
-                            <option>Assignment</option>
-                            <option>Lab Assignment-I</option>
-                            <option>Lab Assignment-II</option>
-                            <option>Laboratory Record Book</option>
-                        </select>
-                        <label for="floatingTextarea">Front Page
-                            Types </label>
-                    </div>
-                </div>
-                <div class="col-lg-3 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Floating label select example"
-                            ng-model="section">
-                            <option selected></option>
+                    <div class="col-6 col-md-3 ec-field">
+                        <label for="ecSection">Section<span class="opt">(optional)</span></label>
+                        <select class="form-select" id="ecSection" ng-model="section">
+                            <option value="">Select</option>
                             <option>A</option>
                             <option>B</option>
                             <option>C</option>
                             <option>D</option>
                         </select>
-                        <label for="floatingTextarea"> Section</label>
                     </div>
                 </div>
-                <div class="col-lg-3 mb-3">
-                    <div class="form-floating">
-                        <input class="form-control" type="date" ng-model="dos">
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-calendar"></i>
-                            Submission
-                            Date </label>
+            </section>
+
+            <!-- 2. Course & submission -->
+            <section class="ec-section">
+                <h2 class="ec-section-title"><span class="ec-step">2</span> Course &amp; submission</h2>
+
+                <div class="row g-3">
+                    <div class="col-md-3 ec-field">
+                        <label for="ecCourse"><i class="fa-solid fa-graduation-cap"></i> Course<span class="req">*</span></label>
+                        <select class="form-select" id="ecCourse" ng-model="course" ng-change="subjects_view();">
+                            <option value="">Select</option>
+                            <option>B.Tech</option>
+                            <option>Diploma</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 ec-field">
+                        <label for="ecSubject"><i class="fa-brands fa-discourse"></i> Subject title<span class="req">*</span></label>
+                        <select class="form-select" id="ecSubject" ng-model="subjects" ng-change="subjects_code_view();">
+                            <option value="">Select subject</option>
+                            <option ng-repeat="s in subjectss_data">{{s.subjects}}</option>
+                        </select>
+                        <div class="ec-hint">Subjects load after you pick department, semester and course.</div>
+                    </div>
+                    <div class="col-md-3 ec-field">
+                        <label for="ecCode">Subject code</label>
+                        <input class="form-control" id="ecCode" placeholder="Auto-filled" ng-model="code" readonly>
+                    </div>
+
+                    <div class="col-md-6 ec-field">
+                        <label for="ecPageType"><i class="fa-solid fa-file-lines"></i> Cover page type<span class="req">*</span></label>
+                        <select class="form-select" id="ecPageType" ng-model="page_type">
+                            <option value="">Select type</option>
+                            <option>Assignment</option>
+                            <option>Lab Assignment-I</option>
+                            <option>Lab Assignment-II</option>
+                            <option>Laboratory Record Book</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 ec-field">
+                        <label for="ecDos"><i class="fa-solid fa-calendar"></i> Submission date<span class="req">*</span></label>
+                        <input class="form-control" id="ecDos" type="date" ng-model="dos">
                     </div>
                 </div>
-            </div>
-            <div style="text-align: left;"><b><i
-                        class="fa-solid fa-chalkboard-user"></i> Submitted
-                    Faculty
-                    Information</b>
-                <hr>
-            </div>
-            <div class="row">
-                <!-- Department Selection -->
-                <div class="col-lg-4 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Select Department"
-                            ng-model="f_dept" ng-change="tech_view();">
-                            <option selected></option>
-                            <?php
-                            $sql = "SELECT dept_name FROM dept";
-                            $result = $con->query($sql);
-                            while ($row = $result->fetch_assoc()) { ?>
-                            <option><?php echo $row['dept_name']; ?></option>
+            </section>
+
+            <!-- 3. Faculty -->
+            <section class="ec-section">
+                <h2 class="ec-section-title"><span class="ec-step">3</span> Submitted to</h2>
+
+                <div class="row g-3">
+                    <div class="col-md-4 ec-field">
+                        <label for="ecFDept"><i class="fa-solid fa-building"></i> Faculty department<span class="req">*</span></label>
+                        <select class="form-select" id="ecFDept" ng-model="f_dept" ng-change="tech_view();">
+                            <option value="">Select department</option>
+                            <?php foreach ($depts as $dept) { ?>
+                            <option><?php echo htmlspecialchars($dept); ?></option>
                             <?php } ?>
                         </select>
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-building"></i>
-                            Department</label>
                     </div>
-                </div>
-
-                <!-- Faculty Name Selection -->
-                <div class="col-lg-6 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid"
-                            aria-label="Select Faculty"
-                            ng-model="f_name" ng-change="designation_view();">
-                            <option selected></option>
-                            <option
-                                ng-repeat="f in tech_data">{{f.teacher}}</option>
+                    <div class="col-md-5 ec-field">
+                        <label for="ecFName"><i class="fa-solid fa-chalkboard-user"></i> Faculty name<span class="req">*</span></label>
+                        <select class="form-select" id="ecFName" ng-model="f_name" ng-change="designation_view();">
+                            <option value="">Select faculty</option>
+                            <option ng-repeat="f in tech_data">{{f.teacher}}</option>
                         </select>
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-user"></i> Faculty
-                            Name</label>
+                    </div>
+                    <div class="col-md-3 ec-field">
+                        <label for="ecFDesignation"><i class="fa-solid fa-pen-nib"></i> Designation</label>
+                        <input class="form-control" id="ecFDesignation" placeholder="Auto-filled" ng-model="f_designation" readonly>
                     </div>
                 </div>
 
-                <!-- Designation Display -->
-                <div class="col-lg-2 mb-3">
-                    <div class="form-floating">
-                        <input class="form-control" ng-model="f_designation"
-                            readonly>
-                        <label for="floatingTextarea"><i
-                                class="fa-solid fa-pen-nib"></i>
-                            Designation</label>
+                <!-- lab submissions go to a second faculty member -->
+                <div class="ec-extra mt-3"
+                    ng-show="page_type === 'Lab Assignment-I' || page_type === 'Lab Assignment-II' || page_type === 'Laboratory Record Book'">
+                    <div class="ec-extra-label"><i class="fa-solid fa-flask"></i> Second faculty for lab submissions</div>
+                    <div class="row g-3 pb-3">
+                        <div class="col-md-9 ec-field">
+                            <label for="ecF2Name"><i class="fa-solid fa-chalkboard-user"></i> Faculty name</label>
+                            <select class="form-select" id="ecF2Name" ng-model="f2_name" ng-change="designation_view_2();">
+                                <option value="">Select faculty</option>
+                                <option ng-repeat="f in tech_data">{{f.teacher}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 ec-field">
+                            <label for="ecF2Designation"><i class="fa-solid fa-pen-nib"></i> Designation</label>
+                            <input class="form-control" id="ecF2Designation" placeholder="Auto-filled" ng-model="f2_designation" readonly>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Part 2 -->
-            <div class="row"
-                ng-show="page_type === 'Lab Assignment-I' || page_type === 'Lab Assignment-II' || page_type === 'Laboratory Record Book'">
-                <!-- Faculty Name Selection -->
-                <div class="col-lg-10 mb-3">
-                    <div class="form-floating">
-                        <select class="form-select" id="floatingSelectGrid2"
-                            aria-label="Select Faculty"
-                            ng-model="f2_name"
-                            ng-change="designation_view_2();">
-                            <option selected></option>
-                            <option
-                                ng-repeat="f in tech_data">{{f.teacher}}</option>
-                        </select>
-                        <label for="floatingTextarea">
-                            <i class="fa-solid fa-user"></i> Faculty Name
-                        </label>
-                    </div>
-                </div>
+            </section>
 
-                <!-- Designation Display -->
-                <div class="col-lg-2 mb-3">
-                    <div class="form-floating">
-                        <input class="form-control" ng-model="f2_designation"
-                            readonly>
-                        <label for="floatingTextarea">
-                            <i class="fa-solid fa-pen-nib"></i> Designation
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <button type="button" class="btn"
-                    style=" background: linear-gradient(to bottom, #66ffcc 0%, #66ccff 100%);"
-                    ng-click="executeFunctions();"><i
-                        class="fa-solid fa-print"></i>
-                    Print</button>
-                <button type="button" class="btn"
-                    style="background: linear-gradient(to bottom, #ff0066 0%, #cc33ff 100%); color: white;"
-                    ng-click="clearAll()">
-                    <i class="fa-solid fa-circle-xmark"></i> Clear All
+            <!-- Actions -->
+            <div class="ec-actions">
+                <button type="button" class="btn ec-btn ec-btn-ghost" ng-click="clearAll()">
+                    <i class="fa-solid fa-rotate-left"></i> Clear all
                 </button>
-
+                <button type="button" class="btn ec-btn ec-btn-primary" ng-click="executeFunctions();">
+                    <i class="fa-solid fa-file-arrow-down"></i> Download cover page
+                </button>
             </div>
-            <br><br>
-            <div class="row">
-                <div class="col-lg-12">
-                   <p class="mb-0">
-                        <i class="fa-solid fa-copyright"></i> 2026 Developed By <b>
-                        <a role="button" class="text-dark fw-semibold text-decoration-none"
-                            data-bs-toggle="modal" data-bs-target="#developerModal">
-                            Mr. Sani Shil
-                        </a></b> | Activity Reviewed by <b>
-                       <a href="https://www.linkedin.com/in/nabakallol-deb-b096b7375/"
-                            class="text-dark fw-semibold text-decoration-none" target="_blank">
-                            Mr. Nabakallol Deb
-                        </a></b> &<b>
-                        <a href="https://www.instagram.com/paulsagar.29/"
-                            class="text-dark fw-semibold text-decoration-none" target="_blank">
-                            Mr. Sagar Rudra Paul
-                        </a></b>
+        </div>
 
-                    </p>
+        <footer class="ec-footer">
+            &copy; 2026 Developed By
+            <a role="button" data-bs-toggle="modal" data-bs-target="#developerModal">Mr. Sani Shil</a>
+            <br>
+            Activity Reviewed by
+            <a href="https://www.linkedin.com/in/nabakallol-deb-b096b7375/" target="_blank" rel="noopener">Mr. Nabakallol Deb</a>
+            &amp;
+            <a href="https://www.instagram.com/paulsagar.29/" target="_blank" rel="noopener">Mr. Sagar Rudra Paul</a>
+        </footer>
+    </div>
 
+    <!-- Developer links popup -->
+    <div class="modal fade" id="developerModal" tabindex="-1" aria-labelledby="developerModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content text-center">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="developerModalLabel">Mr. Sani Shil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
-
-            <!-- Developer links popup -->
-            <div class="modal fade" id="developerModal" tabindex="-1" aria-labelledby="developerModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-sm">
-                    <div class="modal-content text-center">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="developerModalLabel">Mr. Sani Shil</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body d-grid gap-2">
-                            <a href="https://www.linkedin.com/in/sanishil" target="_blank" class="btn btn-primary">
-                                <i class="fa-brands fa-linkedin"></i> LinkedIn
-                            </a>
-                            <a href="https://sanishil.site.je/" target="_blank" class="btn btn-dark">
-                                <i class="fa-solid fa-briefcase"></i> Portfolio
-                            </a>
-                        </div>
-                    </div>
+                <div class="modal-body d-grid gap-2">
+                    <a href="https://www.linkedin.com/in/sanishil" target="_blank" rel="noopener" class="btn btn-primary">
+                        <i class="fa-brands fa-linkedin"></i> LinkedIn
+                    </a>
+                    <a href="https://sanishil.site.je/" target="_blank" rel="noopener" class="btn btn-dark">
+                        <i class="fa-solid fa-briefcase"></i> Portfolio
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Hidden A4 cover page: printPDF() shows it briefly and renders it to the PDF -->
     <div class="a4-page" id="contentToPrint"
         style="display: none; width: 210mm; height: 297mm; padding: 20mm; background: white; box-sizing: border-box; font-family: 'Times New Roman', Times, serif;">
 
@@ -455,7 +325,7 @@ include "../tech/api/connect.php";
                 <div ng-if="section"
                     style="font-size: 16px; font-family: 'Times New Roman', Times, serif;">Section:
                     {{section}}</div>
-                <div  style="font-size: 16px; font-family: 'Times New Roman', Times, serif;">Academic Session: 2025–2026</div>
+                <div  style="font-size: 16px; font-family: 'Times New Roman', Times, serif;">Academic Session: 2026–2027</div>
                 <div
                     style="font-size: 16px; font-family: 'Times New Roman', Times, serif;"><b>Department
                         of
@@ -475,7 +345,7 @@ include "../tech/api/connect.php";
         </div>
 
     </div>
-  </div>
-    <?php
-    $con->close();
-    ?>
+</div>
+<?php
+$con->close();
+?>
