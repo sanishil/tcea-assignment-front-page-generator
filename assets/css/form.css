@@ -9,6 +9,7 @@
 
 body {
    background: var(--bg);
+   font-size: 1rem;
 }
 
 .ec-page {

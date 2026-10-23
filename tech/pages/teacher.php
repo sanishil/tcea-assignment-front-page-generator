@@ -7,10 +7,8 @@ include "../api/connect.php";
         <div class="col-lg-12 mb-3">
             <div class="shadow-lg p-4 rounded">
                 <h5 class="d-flex justify-content-between align-items-center">
-                    <span>Teacher Section</span>
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
+                    <span>All teachers</span>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fa-solid fa-plus"></i> Add new</button>
                 </h5>
                 <div class="alert alert-success" ng-if="deleteMessage">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
@@ -18,21 +16,19 @@ include "../api/connect.php";
                     </svg>
                     {{ deleteMessage }}
                 </div>
-                <div class="row pt-2 g-2 justify-content-end">
-                    <div class="col-sm-6 col-lg-4">
+                <div class="list-toolbar">
+                    <div class="list-filters">
                         <select class="form-select" ng-model="teacherDept.value" ng-change="pager.page = 1"
-                            ng-options="d.name as (d.name + ' (' + d.count + ')') for d in teacherDepts" aria-label="Filter by department">
+                                ng-options="d.name as (d.name + ' (' + d.count + ')') for d in teacherDepts" aria-label="Filter by department">
                             <option value="">All departments ({{ teacher_data.length || 0 }})</option>
                         </select>
-                    </div>
-                    <div class="col-sm-6 col-lg-3">
                         <input class="form-control" type="search" ng-model="search" ng-change="pager.page = 1" placeholder="Search"
                             aria-label="Search">
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <table class="table">
+                    <div class="table-responsive"><table class="table">
                         <thead class="table-light border-dark">
                             <tr class="text-center">
                                 <th style="width: 10%;">#</th>
@@ -60,7 +56,7 @@ include "../api/connect.php";
                                 <td colspan="5" class="text-center text-muted py-4">No teachers match this department / search.</td>
                             </tr>
                         </tbody>
-                    </table> <!-- ✅ Fixed missing closing table tag -->
+                    </table></div> <!-- ✅ Fixed missing closing table tag -->
                     <table-pager total="rows.length" pager="pager"></table-pager>
 
                     <div class="row">

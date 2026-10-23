@@ -1,4 +1,10 @@
-<?php include '../session_check.php'; ?>
+<?php include '../session_check.php';
+$displayName = ucwords($_SESSION['name']);
+$initials = '';
+foreach (preg_split('/\s+/', trim($displayName)) as $word) {
+   if ($word !== '' && strlen($initials) < 2) $initials .= substr($word, 0, 1);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +12,11 @@
    <!-- Required meta tags -->
    <meta charset="utf-8" />
    <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <!-- applies the saved light/dark theme before the page paints -->
+   <script src="../assets/js/theme.js"></script>
+   <link rel="preconnect" href="https://fonts.googleapis.com" />
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
    <link rel="icon" href="../img/final_tcea.jpg" />
    <!-- <link rel="stylesheet" href="../assets/fw/css/all.css">
       <link rel="stylesheet" href="../assets/fw/css/all.min.css"> -->
@@ -80,7 +91,13 @@
    <!-- ================= SIDEBAR ================= -->
    <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
-         <a href="#!"><img src="../img/final_tcea.jpg" alt="logo" class="img-fluid" /></a>
+         <a href="#!" class="brand-link">
+            <img src="../img/final_tcea.jpg" alt="TCEA logo" width="40" height="40" />
+            <span class="brand-text">
+               <span class="brand-name">TCEA</span>
+               <span class="brand-sub">EduCover Portal</span>
+            </span>
+         </a>
       </div>
 
       <nav class="sidebar-menu">
@@ -132,48 +149,55 @@
          </ul>
       </nav>
 
-      <!-- ⭐ USER NAME + LOGOUT AT THE BOTTOM ⭐ -->
+      <!-- signed-in user + logout -->
       <div class="sidebar-user">
-         <div class="name"><i class="fa-solid fa-circle-user"></i> <?php echo htmlspecialchars(ucwords($_SESSION['name'])); ?></div>
-         <a class="sidebar-link logout" href="../logout.php"><i class="icon fa-solid fa-arrow-right-from-bracket"></i> Log Out</a>
+         <div class="user-card">
+            <span class="avatar"><?php echo htmlspecialchars($initials); ?></span>
+            <span class="user-meta">
+               <span class="user-name"><?php echo htmlspecialchars($displayName); ?></span>
+               <span class="user-mail"><?php echo htmlspecialchars($_SESSION['user_id']); ?></span>
+            </span>
+            <a class="logout-btn" href="../logout.php" title="Log out" aria-label="Log out">
+               <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </a>
+         </div>
       </div>
    </aside>
    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
    <!-- ================= MAIN ================= -->
    <div class="main-wrapper">
-      <header class="topbar d-flex align-items-center">
-         <button class="btn btn-light border d-lg-none me-3" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
+      <header class="topbar">
+         <button class="icon-btn d-lg-none" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
             <i class="fa-solid fa-bars"></i>
          </button>
-         <span class="fw-semibold fs-5" id="pageTitle">Home</span>
-         <span class="ms-auto d-none d-sm-inline" style="color: var(--accent);">
-            <i class="fa-solid fa-user"></i>
-            <b><?php echo "Welcome Back " . htmlspecialchars(ucwords($_SESSION['name'])); ?></b>
-         </span>
+         <div class="topbar-title">
+            <span class="crumb" id="pageCrumb"></span>
+            <h1 id="pageTitle">Home</h1>
+         </div>
+         <div class="topbar-actions">
+            <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false"
+               title="Switch to dark mode" aria-label="Switch to dark mode">
+               <i class="fa-solid fa-moon icon-moon"></i><i class="fa-solid fa-sun icon-sun"></i>
+            </button>
+            <span class="user-chip d-none d-sm-inline-flex">
+               <span class="avatar avatar-sm"><?php echo htmlspecialchars($initials); ?></span>
+               <span><?php echo htmlspecialchars($displayName); ?></span>
+            </span>
+         </div>
       </header>
 
       <main class="main-content">
          <div ng-view></div>
       </main>
 
-      <footer class="bg-light text-dark text-center shadow-sm py-3">
-         <p class="mb-0">
-            <i class="fa-solid fa-copyright"></i> 2026 Developed By <b>
-            <a role="button" class="text-dark fw-semibold text-decoration-none"
-               data-bs-toggle="modal" data-bs-target="#developerModal">
-               Mr. Sani Shil
-            </a></b> | Activity Reviewed by <b>
-            <a href="https://www.linkedin.com/in/nabakallol-deb-b096b7375/"
-               class="text-dark fw-semibold text-decoration-none" target="_blank">
-               Mr. Nabakallol Deb
-            </a></b> &amp; <b>
-            <a href="https://www.instagram.com/paulsagar.29/"
-               class="text-dark fw-semibold text-decoration-none" target="_blank">
-               Mr. Sagar Rudra Paul
-            </a></b>
-         </p>
-
+      <footer class="app-footer">
+         &copy; 2026 Developed by
+         <a role="button" data-bs-toggle="modal" data-bs-target="#developerModal">Mr. Sani Shil</a>
+         · Reviewed by
+         <a href="https://www.linkedin.com/in/nabakallol-deb-b096b7375/" target="_blank" rel="noopener">Mr. Nabakallol Deb</a>
+         &amp;
+         <a href="https://www.instagram.com/paulsagar.29/" target="_blank" rel="noopener">Mr. Sagar Rudra Paul</a>
       </footer>
 
       <!-- Developer links popup -->
@@ -208,6 +232,7 @@
          var body = document.body;
          var links = document.querySelectorAll(".sidebar-menu a.sidebar-link");
          var pageTitle = document.getElementById("pageTitle");
+         var pageCrumb = document.getElementById("pageCrumb");
 
          function closeSidebar() {
             body.classList.remove("sidebar-open");
@@ -238,6 +263,9 @@
 
                // Open the group that contains the active page
                var submenu = link.closest(".sidebar-submenu");
+               pageCrumb.textContent = submenu
+                  ? document.querySelector('[data-bs-target="#' + submenu.id + '"]').textContent.trim()
+                  : "";
                if (submenu && !submenu.classList.contains("show")) {
                   new bootstrap.Collapse(submenu, { toggle: true });
                }

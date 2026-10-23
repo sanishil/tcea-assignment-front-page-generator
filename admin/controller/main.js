@@ -44,11 +44,39 @@ app.config(function ($routeProvider) {
 
 var deptChartInstance = null;
 
+// Chart colours follow the light / dark theme tokens in assets/css/modern.css
+function chartColors() {
+  var css = getComputedStyle(document.documentElement);
+  function token(name, fallback) {
+    return css.getPropertyValue(name).trim() || fallback;
+  }
+  return {
+    text: token("--chart-text", "#52514e"),
+    grid: token("--chart-grid", "#eef0f2"),
+    bars: [token("--tone-blue", "#2a78d6"), token("--tone-orange", "#eb6834"), token("--tone-green", "#1baf7a")],
+  };
+}
+
+// re-colour the dashboard chart when the theme is switched (assets/js/theme.js)
+document.addEventListener("themechange", function () {
+  var chart = deptChartInstance;
+  if (!chart || !document.body.contains(chart.canvas)) return;
+  var c = chartColors();
+  chart.data.datasets.forEach(function (ds, i) {
+    ds.backgroundColor = c.bars[i];
+  });
+  chart.options.plugins.legend.labels.color = c.text;
+  chart.options.scales.x.ticks.color = c.text;
+  chart.options.scales.y.ticks.color = c.text;
+  chart.options.scales.y.grid.color = c.grid;
+  chart.update();
+});
+
 app.controller("dashCtrl", function ($scope, $http, $timeout) {
   // pagination state for the table on the current page (see tablePager below)
   $scope.pager = { page: 1, size: 10 };
 
-  // Student list: semester tabs (All, 1st ... 8th)
+  // Student / subject lists: semester dropdown (All, then each semester that has rows)
   $scope.semSel = { value: "" }; // "" = All
   $scope.semTabs = [];
 
@@ -58,13 +86,13 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
     rows.forEach(function (r) {
       if (r.sem && sems.indexOf(r.sem) === -1) sems.push(r.sem);
     });
-    var tabs = [{ value: "", label: "All", count: rows.length }];
+    var tabs = [{ value: "", label: "All semesters", count: rows.length }];
     sems.forEach(function (s) {
-      tabs.push({
-        value: s,
-        label: s,
-        count: rows.filter(function (r) { return r.sem == s; }).length,
-      });
+      var count = rows.filter(function (r) { return r.sem == s; }).length;
+      // hide empty semesters, but never the one that is selected
+      if (count || s == $scope.semSel.value) {
+        tabs.push({ value: s, label: s + " semester", count: count });
+      }
     });
     return tabs;
   }
@@ -180,16 +208,16 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
     if (!canvas || typeof Chart === "undefined") return;
     if (deptChartInstance) deptChartInstance.destroy();
 
-    var muted = "#52514e";
+    var colors = chartColors();
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     deptChartInstance = new Chart(canvas, {
       type: "bar",
       data: {
         labels: rows.map(function (r) { return r.dept_name; }),
         datasets: [
-          { label: "Students", data: rows.map(function (r) { return r.students; }), backgroundColor: "#2a78d6" },
-          { label: "Teachers", data: rows.map(function (r) { return r.teachers; }), backgroundColor: "#eb6834" },
-          { label: "Subjects", data: rows.map(function (r) { return r.subjects; }), backgroundColor: "#1baf7a" },
+          { label: "Students", data: rows.map(function (r) { return r.students; }), backgroundColor: colors.bars[0] },
+          { label: "Teachers", data: rows.map(function (r) { return r.teachers; }), backgroundColor: colors.bars[1] },
+          { label: "Subjects", data: rows.map(function (r) { return r.subjects; }), backgroundColor: colors.bars[2] },
         ],
       },
       options: {
@@ -208,7 +236,7 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
           legend: {
             position: "top",
             align: "start",
-            labels: { color: muted, usePointStyle: true, pointStyle: "rectRounded", boxWidth: 10 },
+            labels: { color: colors.text, usePointStyle: true, pointStyle: "rectRounded", boxWidth: 10 },
           },
           tooltip: { padding: 10 },
         },
@@ -216,7 +244,7 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
           x: {
             grid: { display: false },
             ticks: {
-              color: muted,
+              color: colors.text,
               autoSkip: false,
               // flat labels on wide screens; phones still need to tilt them
               maxRotation: window.innerWidth < 576 ? 50 : 0,
@@ -243,8 +271,8 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
           },
           y: {
             beginAtZero: true,
-            ticks: { color: muted, precision: 0 },
-            grid: { color: "#eef0f2" },
+            ticks: { color: colors.text, precision: 0 },
+            grid: { color: colors.grid },
             border: { display: false },
           },
         },

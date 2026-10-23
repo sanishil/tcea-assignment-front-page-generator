@@ -6,9 +6,8 @@ include "../api/connect.php";
         <div class="col-lg-12 mb-3">
             <div class="shadow-lg p-4 rounded">
                 <h5 class="d-flex justify-content-between align-items-center">
-                    <span>Subjects Section</span>
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i
-                            class="fa-solid fa-plus"></i></button>
+                    <span>All subjects</span>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fa-solid fa-plus"></i> Add new</button>
                 </h5>
                 <div class="alert alert-success" ng-if="deleteMessage">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
@@ -16,29 +15,22 @@ include "../api/connect.php";
                     </svg>
                     {{ deleteMessage }}
                 </div>
-                <div class="row pt-2 g-2 align-items-center">
-                    <div class="col-lg">
-                        <div class="sem-tabs" role="group" aria-label="Filter by semester">
-                            <button type="button" class="sem-tab" ng-repeat="s in semTabs track by s.value"
-                                ng-class="{ active: semSel.value == s.value }" ng-click="pickSem(s.value)">
-                                {{ s.label }} <span class="count">{{ s.count }}</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-lg-3">
+                <div class="list-toolbar">
+                    <div class="list-filters">
+                        <select class="form-select" ng-model="semSel.value" ng-change="pickSem(semSel.value)"
+                            ng-options="s.value as (s.label + ' (' + s.count + ')') for s in semTabs" aria-label="Filter by semester">
+                        </select>
                         <select class="form-select" ng-model="branchSel.value" ng-change="pickBranch()"
-                            ng-options="b for b in branches" aria-label="Filter by branch">
+                                ng-options="b for b in branches" aria-label="Filter by branch">
                             <option value="">All branches</option>
                         </select>
-                    </div>
-                    <div class="col-sm-6 col-lg-3">
                         <input class="form-control" type="search" ng-model="search" ng-change="pager.page = 1" placeholder="Search"
                             aria-label="Search">
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <table class="table table-borderless">
+                    <div class="table-responsive"><table class="table table-borderless">
                         <thead class="table-light border-dark">
                             <tr class="text-center">
                                 <th style="width: 10%;">#</th>
@@ -66,7 +58,7 @@ include "../api/connect.php";
                             <tr ng-if="subject_data && rows.length === 0">
                                 <td colspan="7" class="text-center text-muted py-4">No subjects for this semester / branch.</td>
                             </tr>
-                    </table>
+                    </table></div>
                     <table-pager total="rows.length" pager="pager"></table-pager>
                     <div class="row">
                         <div class="col-lg-4"></div>
