@@ -18,8 +18,14 @@ include "../api/connect.php";
                     </svg>
                     {{ deleteMessage }}
                 </div>
-                <div class="row pt-2">
-                    <div class="col-md-4 offset-md-8">
+                <div class="row pt-2 g-2 justify-content-end">
+                    <div class="col-sm-6 col-lg-4">
+                        <select class="form-select" ng-model="teacherDept.value" ng-change="pager.page = 1"
+                            ng-options="d.name as (d.name + ' (' + d.count + ')') for d in teacherDepts" aria-label="Filter by department">
+                            <option value="">All departments ({{ teacher_data.length || 0 }})</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
                         <input class="form-control" type="search" ng-model="search" ng-change="pager.page = 1" placeholder="Search"
                             aria-label="Search">
                     </div>
@@ -37,7 +43,7 @@ include "../api/connect.php";
                             </tr>
                         </thead>
                         <tbody class="text-center">
-                            <tr ng-repeat="x in (rows = (teacher_data | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
+                            <tr ng-repeat="x in (rows = (teacher_data | filter:byTeacherDept | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
                                 <th>{{(pager.page-1)*pager.size + $index+1}}</th>
                                 <td>{{x.teacher}}</td>
                                 <td>{{x.designation}}</td>
@@ -49,6 +55,9 @@ include "../api/connect.php";
                                     <button class="btn btn-danger" ng-click="teacher_delete(x.id);"><i
                                             class="fa-solid fa-trash"></i></button>
                                 </td>
+                            </tr>
+                            <tr ng-if="teacher_data.length && rows.length === 0">
+                                <td colspan="5" class="text-center text-muted py-4">No teachers match this department / search.</td>
                             </tr>
                         </tbody>
                     </table> <!-- ✅ Fixed missing closing table tag -->

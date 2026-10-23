@@ -177,6 +177,48 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
         $scope.pager.page = 1;
     };
 
+    // Subject list: semester tabs (shared with the student list) + branch filter
+    $scope.branchSel = { value: null }; // null = All branches
+    $scope.branches = [];
+
+    $scope.byBranch = function (x) {
+        return !$scope.branchSel.value || x.dept_name == $scope.branchSel.value;
+    };
+
+    // semester tab counts follow the chosen branch
+    function buildSubjectFilters() {
+        var rows = $scope.subject_data || [];
+        $scope.branches = rows
+            .map(function (r) { return r.dept_name; })
+            .filter(function (d, i, all) { return d && all.indexOf(d) === i; })
+            .sort();
+        $scope.semTabs = buildSemTabs(rows.filter($scope.byBranch));
+    }
+
+    $scope.pickBranch = function () {
+        $scope.pager.page = 1;
+        buildSubjectFilters();
+    };
+
+    // Teacher list: department filter
+    $scope.teacherDept = { value: null }; // null = All departments
+    $scope.teacherDepts = [];
+
+    $scope.byTeacherDept = function (x) {
+        return !$scope.teacherDept.value || x.dept_name == $scope.teacherDept.value;
+    };
+
+    function buildTeacherDepts() {
+        var rows = $scope.teacher_data || [];
+        $scope.teacherDepts = rows
+            .map(function (r) { return r.dept_name; })
+            .filter(function (d, i, all) { return d && all.indexOf(d) === i; })
+            .sort()
+            .map(function (d) {
+                return { name: d, count: rows.filter(function (r) { return r.dept_name == d; }).length };
+            });
+    }
+
     // "dashboard"
     $scope.std_view = function () {
         $http({
@@ -405,6 +447,7 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
                     $scope.teacher_data = []; // ✅ Ensure the array is empty
                     $scope.noDataMessage = response.data.message; // ✅ Assign message
                 }
+                buildTeacherDepts();
             },
             function () {
                 alert("Error! Fetching Problem in teacher_view()");
@@ -549,6 +592,7 @@ app.controller("dashCtrl", function ($scope, $http, $timeout) {
                     $scope.subject_data = []; // ✅ Ensure the array is empty
                     $scope.noDataMessage = response.data.message; // ✅ Assign message
                 }
+                buildSubjectFilters();
             },
             function () {
                 alert("Error! Fetching Problem in subject_data()");

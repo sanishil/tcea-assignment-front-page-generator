@@ -16,8 +16,22 @@ include "../api/connect.php";
                     </svg>
                     {{ deleteMessage }}
                 </div>
-                <div class="row pt-2">
-                    <div class="col-md-4 offset-md-8">
+                <div class="row pt-2 g-2 align-items-center">
+                    <div class="col-lg">
+                        <div class="sem-tabs" role="group" aria-label="Filter by semester">
+                            <button type="button" class="sem-tab" ng-repeat="s in semTabs track by s.value"
+                                ng-class="{ active: semSel.value == s.value }" ng-click="pickSem(s.value)">
+                                {{ s.label }} <span class="count">{{ s.count }}</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <select class="form-select" ng-model="branchSel.value" ng-change="pickBranch()"
+                            ng-options="b for b in branches" aria-label="Filter by branch">
+                            <option value="">All branches</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
                         <input class="form-control" type="search" ng-model="search" ng-change="pager.page = 1" placeholder="Search"
                             aria-label="Search">
                     </div>
@@ -37,7 +51,7 @@ include "../api/connect.php";
                             </tr>
                         </thead>
                         <tbody class="text-center">
-                            <tr ng-repeat="x in (rows = (subject_data | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
+                            <tr ng-repeat="x in (rows = (subject_data | filter:bySem | filter:byBranch | filter:search)) | limitTo:pager.size:(pager.page-1)*pager.size">
                                 <th >{{(pager.page-1)*pager.size + $index+1}}</th>
                                 <td>{{x.subjects}}</td>
                                 <td>{{x.code}}</td>
@@ -48,6 +62,9 @@ include "../api/connect.php";
                                             class="fa-solid fa-pen-to-square"></i></button>
                                     <button class="btn btn-danger" ng-click="subject_delete(x.id);"><i class="fa-solid fa-trash"></i></button>
                                 </td>
+                            </tr>
+                            <tr ng-if="subject_data && rows.length === 0">
+                                <td colspan="7" class="text-center text-muted py-4">No subjects for this semester / branch.</td>
                             </tr>
                     </table></div>
                     <table-pager total="rows.length" pager="pager"></table-pager>
