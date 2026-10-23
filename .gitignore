@@ -1,0 +1,2 @@
+# SMTP password for password-reset emails (see mail_config.example.php)
+mail_config.php

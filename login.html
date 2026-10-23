@@ -383,6 +383,131 @@
       cursor: pointer;
     }
 
+    /* "Forgot password?" next to the Password label */
+    .label-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .field .label-row label { margin-bottom: 0; }
+
+    .link-btn {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--primary);
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .link-btn:hover { text-decoration: underline; }
+
+    .link-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+
+    .link-btn[disabled] { color: var(--text-muted); font-weight: 500; text-decoration: none; cursor: default; }
+
+    /* forgot password popups */
+    .fp-dialog {
+      width: min(400px, calc(100% - 2rem));
+      padding: 0;
+      border: 0;
+      border-radius: 18px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: var(--font);
+      box-shadow: 0 20px 48px rgba(16, 24, 40, 0.2);
+    }
+
+    .fp-dialog::backdrop { background: rgba(17, 24, 39, 0.55); }
+
+    .fp-body { position: relative; padding: 1.75rem 1.5rem 1.5rem; }
+
+    .fp-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 9px;
+      background: none;
+      font-size: 1.4rem;
+      line-height: 1;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .fp-close:hover { background: #f3f4f6; color: var(--text); }
+
+    .fp-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      border-radius: 14px;
+      background: #eef2ff;
+      color: var(--primary);
+    }
+
+    .fp-dialog h2 { margin: 0 0 0.35rem; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+
+    .fp-text { margin: 0 0 1.25rem; color: var(--text-muted); font-size: 0.92rem; line-height: 1.5; }
+
+    .fp-text b { color: var(--text); }
+
+    .fp-dialog .field { margin-bottom: 0.9rem; }
+
+    .fp-dialog .submit { margin-top: 1rem; }
+
+    .control input.otp-input {
+      padding: 0 0.9rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .control input.otp-input::placeholder { letter-spacing: 0.3em; }
+
+    .fp-error {
+      display: none;
+      padding: 0.6rem 0.8rem;
+      border-radius: 10px;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+
+    .fp-error.show { display: block; }
+
+    .fp-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .fp-check {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .fp-check input { width: 16px; height: 16px; accent-color: var(--primary); }
+
     /* ================= Tablet / phone ================= */
     @media (max-width: 899.98px) {
       .page {
@@ -476,7 +601,10 @@
           </div>
 
           <div class="field">
-            <label for="pass">Password</label>
+            <div class="label-row">
+              <label for="pass">Password</label>
+              <button type="button" class="link-btn" id="forgotLink">Forgot password?</button>
+            </div>
             <div class="control">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -571,6 +699,89 @@
     </div>
   </dialog>
 
+  <!-- Forgot password, popup 1: email, then the emailed code -->
+  <dialog class="fp-dialog" id="fpDialog" aria-labelledby="fpTitle">
+    <div class="fp-body">
+      <button type="button" class="fp-close" data-close aria-label="Close">&times;</button>
+
+      <form id="fpEmailForm" novalidate>
+        <span class="fp-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 6L2 7" /></svg></span>
+        <h2 id="fpTitle">Forgot password?</h2>
+        <p class="fp-text">Enter the email address you sign in with and we'll send you a 6-digit code.</p>
+        <div class="field">
+          <label for="fpEmail">Email address</label>
+          <div class="control">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 6L2 7" /></svg>
+            <input type="email" id="fpEmail" placeholder="you@example.com" autocomplete="email" autocapitalize="off"
+              spellcheck="false" required>
+          </div>
+        </div>
+        <div class="fp-error" role="alert"></div>
+        <button type="submit" class="submit">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="label">Send code</span>
+          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+        </button>
+      </form>
+
+      <form id="fpOtpForm" novalidate hidden>
+        <span class="fp-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg></span>
+        <h2>Check your email</h2>
+        <p class="fp-text">We sent a 6-digit code to <b id="fpMasked"></b>. It expires in 10 minutes. Don't see it? Please check your <b>Spam</b> folder too.</p>
+        <div class="field">
+          <label for="fpOtp">Verification code</label>
+          <div class="control">
+            <input type="text" id="fpOtp" class="otp-input" inputmode="numeric" pattern="[0-9]*" maxlength="6"
+              autocomplete="one-time-code" placeholder="------" required>
+          </div>
+        </div>
+        <div class="fp-error" role="alert"></div>
+        <button type="submit" class="submit">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="label">Verify code</span>
+          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+        </button>
+        <div class="fp-foot">
+          <button type="button" class="link-btn" id="fpChangeEmail">Change email</button>
+          <button type="button" class="link-btn" id="fpResend" disabled>Resend code</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Forgot password, popup 2: new password (only after the code is accepted) -->
+  <dialog class="fp-dialog" id="npDialog" aria-labelledby="npTitle">
+    <div class="fp-body">
+      <button type="button" class="fp-close" data-close aria-label="Close">&times;</button>
+      <form id="npForm" novalidate>
+        <span class="fp-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <h2 id="npTitle">Set a new password</h2>
+        <p class="fp-text">Your code is verified. Choose a new password with at least 6 characters.</p>
+        <div class="field">
+          <label for="npPass">New password</label>
+          <div class="control">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+            <input type="password" id="npPass" placeholder="At least 6 characters" autocomplete="new-password" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="npPass2">Confirm new password</label>
+          <div class="control">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+            <input type="password" id="npPass2" placeholder="Type it again" autocomplete="new-password" required>
+          </div>
+        </div>
+        <label class="fp-check"><input type="checkbox" id="npShow"> Show passwords</label>
+        <div class="fp-error" role="alert" style="margin-top: 0.9rem;"></div>
+        <button type="submit" class="submit">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="label">Update password</span>
+          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+        </button>
+      </form>
+    </div>
+  </dialog>
+
   <script src="assets/js/toast.js"></script>
   <script>
     // photo may already be cached and loaded before onload was attached
@@ -658,6 +869,206 @@
         newCaptcha();
       }
     });
+
+    // ---------------- Forgot password: email -> code -> new password ----------------
+    (function () {
+      var forgotLink = document.getElementById('forgotLink');
+      var fpDialog = document.getElementById('fpDialog');
+      var npDialog = document.getElementById('npDialog');
+      if (!fpDialog.showModal) { forgotLink.hidden = true; return; }
+
+      var emailForm = document.getElementById('fpEmailForm');
+      var otpForm = document.getElementById('fpOtpForm');
+      var npForm = document.getElementById('npForm');
+      var emailInput = document.getElementById('fpEmail');
+      var otpInput = document.getElementById('fpOtp');
+      var npPass = document.getElementById('npPass');
+      var npPass2 = document.getElementById('npPass2');
+      var resendBtn = document.getElementById('fpResend');
+      var resendTimer = null;
+      var resendLeft = 0;
+
+      function api(body) {
+        return fetch('forgot_password.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify(body)
+        }).then(function (r) { return r.json(); })
+          .catch(function () { return { status: 'error', message: 'Network problem. Please check your connection and try again.' }; });
+      }
+
+      function busy(form, on, label) {
+        var btn = form.querySelector('.submit');
+        btn.disabled = on;
+        btn.querySelector('.label').textContent = label;
+      }
+
+      function showError(form, msg) {
+        var box = form.querySelector('.fp-error');
+        box.textContent = msg || '';
+        box.classList.toggle('show', !!msg);
+      }
+
+      function showStep(name) {
+        emailForm.hidden = name !== 'email';
+        otpForm.hidden = name !== 'otp';
+        (name === 'email' ? emailInput : otpInput).focus();
+      }
+
+      // "Resend code in 42s", then clickable again
+      function startResendTimer(seconds) {
+        clearInterval(resendTimer);
+        resendLeft = seconds;
+        function tick() {
+          if (resendLeft <= 0) {
+            clearInterval(resendTimer);
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend code';
+            return;
+          }
+          resendBtn.disabled = true;
+          resendBtn.textContent = 'Resend code in ' + resendLeft + 's';
+          resendLeft--;
+        }
+        tick();
+        resendTimer = setInterval(tick, 1000);
+      }
+
+      function sendCode(form) {
+        var email = emailInput.value.trim();
+        showError(form, '');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError(form, 'Please enter a valid email address.');
+          return Promise.resolve(false);
+        }
+        return api({ op: 'send_otp', email: email }).then(function (res) {
+          if (res.status !== 'success') {
+            showError(form, res.message);
+            if (res.wait) startResendTimer(res.wait);
+            return false;
+          }
+          document.getElementById('fpMasked').textContent = res.masked;
+          startResendTimer(res.wait || 60);
+          return true;
+        });
+      }
+
+      forgotLink.addEventListener('click', function () {
+        // the username box may already hold the email
+        var typed = document.getElementById('user').value.trim();
+        if (typed.indexOf('@') > 0 && !emailInput.value) emailInput.value = typed;
+        showError(emailForm, '');
+        fpDialog.showModal();
+        showStep('email');
+      });
+
+      emailForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        busy(emailForm, true, 'Sending code…');
+        sendCode(emailForm).then(function (sent) {
+          busy(emailForm, false, 'Send code');
+          if (!sent) return;
+          otpInput.value = '';
+          showError(otpForm, '');
+          showStep('otp');
+        });
+      });
+
+      otpInput.addEventListener('input', function () {
+        otpInput.value = otpInput.value.replace(/\D/g, '').slice(0, 6);
+      });
+
+      otpForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (otpInput.value.length !== 6) {
+          showError(otpForm, 'Enter the 6-digit code from the email.');
+          return;
+        }
+        busy(otpForm, true, 'Checking…');
+        api({ op: 'verify_otp', otp: otpInput.value }).then(function (res) {
+          busy(otpForm, false, 'Verify code');
+          if (res.status !== 'success') {
+            if (res.restart) {
+              showStep('email');
+              showError(emailForm, res.message);
+            } else {
+              showError(otpForm, res.message);
+              otpInput.select();
+            }
+            return;
+          }
+          // code accepted: second popup for the new password
+          fpDialog.close();
+          npForm.reset();
+          npPass.type = npPass2.type = 'password';
+          showError(npForm, '');
+          npDialog.showModal();
+          npPass.focus();
+        });
+      });
+
+      resendBtn.addEventListener('click', function () {
+        resendBtn.disabled = true;
+        sendCode(otpForm).then(function (sent) {
+          if (sent) {
+            otpInput.value = '';
+            otpInput.focus();
+            showToast('A new code has been sent to your email.', 'info');
+          } else if (resendLeft <= 0) {
+            resendBtn.disabled = false;
+          }
+        });
+      });
+
+      document.getElementById('fpChangeEmail').addEventListener('click', function () {
+        showError(emailForm, '');
+        showStep('email');
+        emailInput.select();
+      });
+
+      document.getElementById('npShow').addEventListener('change', function () {
+        npPass.type = npPass2.type = this.checked ? 'text' : 'password';
+      });
+
+      npForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        showError(npForm, '');
+        if (npPass.value.length < 6) {
+          showError(npForm, 'Password must be at least 6 characters.');
+          npPass.focus();
+          return;
+        }
+        if (npPass.value !== npPass2.value) {
+          showError(npForm, 'The two passwords do not match.');
+          npPass2.focus();
+          return;
+        }
+        busy(npForm, true, 'Updating…');
+        api({ op: 'reset', pass: npPass.value, cpass: npPass2.value }).then(function (res) {
+          if (res.status !== 'success') {
+            busy(npForm, false, 'Update password');
+            if (res.restart) {
+              npDialog.close();
+              fpDialog.showModal();
+              showStep('email');
+              showError(emailForm, res.message);
+            } else {
+              showError(npForm, res.message);
+            }
+            return;
+          }
+          npDialog.close();
+          showToast('Your password is updated.', 'success');
+          // back to a fresh login page once the toast has been seen
+          setTimeout(function () { window.location.href = 'login.html'; }, 2200);
+        });
+      });
+
+      document.querySelectorAll('.fp-dialog [data-close]').forEach(function (btn) {
+        btn.addEventListener('click', function () { btn.closest('dialog').close(); });
+      });
+    })();
   </script>
 </body>
 
